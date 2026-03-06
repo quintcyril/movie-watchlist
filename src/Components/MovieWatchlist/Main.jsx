@@ -8,9 +8,11 @@ export default function MovieWatchListMain() {
     const [genre, setGenre] = useState('Action');
     const [totalCount, setTotalCount] = useState(0);
 
-    useEffect(() => {
-        setTotalCount(movies.length);
-    }, [movies]);
+    // TODO: Add a useEffect that recalculates totalCount whenever the movies array changes
+
+    // TODO: Add two new state variables for editing:
+    //   - editingId: tracks which movie is currently being edited (null by default)
+    //   - editTitle: holds the current value of the title input while editing
 
     const handleAddMovie = () => {
         if (title.trim()) {
@@ -22,6 +24,14 @@ export default function MovieWatchListMain() {
     const handleRemoveMovie = (id) => {
         setMovies(movies.filter(movie => movie.id !== id));
     };
+
+    // TODO: Add a handleStartEdit(movie) function that:
+    //   - Sets editingId to the movie's id
+    //   - Sets editTitle to the movie's current title
+
+    // TODO: Add a handleUpdateTitle(id) function that:
+    //   - If editTitle is not empty, updates the matching movie's title in the movies array
+    //   - Resets editingId to null and clears editTitle
 
     return (
         <div className="watchlist-container">
@@ -50,12 +60,19 @@ export default function MovieWatchListMain() {
 
             <div className="movies-list">
                 {movies.map(movie => (
-                    <MovieCard
-                        key={movie.id}
-                        title={movie.title}
-                        genre={movie.genre}
-                        onRemove={() => handleRemoveMovie(movie.id)}
-                    />
+                    <div key={movie.id}>
+                        {/* TODO: Check if this movie is being edited (editingId === movie.id).
+                             If yes, show an edit form with:
+                               - A text input bound to editTitle
+                               - A Save button that calls handleUpdateTitle(movie.id)
+                               - A Cancel button that resets editingId to null
+                             If no, render the MovieCard below and pass onUpdate to it */}
+                        <MovieCard
+                            title={movie.title}
+                            genre={movie.genre}
+                            onRemove={() => handleRemoveMovie(movie.id)}
+                        />
+                    </div>
                 ))}
             </div>
         </div>
