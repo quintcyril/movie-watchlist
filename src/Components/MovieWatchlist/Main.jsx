@@ -24,6 +24,21 @@ export default function MovieWatchListMain() {
         setMovies(movies.filter(movie => movie.id !== id));
     };
 
+    const handleStartEdit = (movie) => { /*added editigID and editTitle*/
+        setEditingID(movie.id);
+        seteditTitle(movie.title);
+    }
+
+    const handleUpdateTitle = (id) => { /* if statement sa editTitle*/
+        if(editTitle.trim()){
+            setMovies(
+                movie.map(movie =>
+                    movie,id === id? { ...movie, title: editTitle } : movie
+                )
+            );
+        }
+    }
+
     // TODO: Add a handleStartEdit(movie) function that:
     //   - Sets editingId to the movie's id
     //   - Sets editTitle to the movie's current title
@@ -60,6 +75,7 @@ export default function MovieWatchListMain() {
             <div className="movies-list">
                 {movies.map(movie => (
                     <div key={movie.id}>
+
                         {/* TODO: Check if this movie is being edited (editingId === movie.id).
                              If yes, show an edit form with:
                                - A text input bound to editTitle
@@ -70,6 +86,7 @@ export default function MovieWatchListMain() {
                             title={movie.title}
                             genre={movie.genre}
                             onRemove={() => handleRemoveMovie(movie.id)}
+                            onUpdate={() => handleStartEdit (movie)} /*added onUpdate*/
                         />
                     </div>
                 ))}
@@ -77,3 +94,10 @@ export default function MovieWatchListMain() {
         </div>
     );
 }
+
+/*ikalima nga TODO: TODO: Check if this movie is being edited (editingId === movie.id).
+                             If yes, show an edit form with:
+                               - A text input bound to editTitle
+                               - A Save button that calls handleUpdateTitle(movie.id)
+                               - A Cancel button that resets editingId to null
+                             If no, render the MovieCard below and pass onUpdate to it */
