@@ -19,6 +19,8 @@ export default function MovieWatchListMain() {
     //   - editingId: tracks which movie is currently being edited (null by default)
     //   - editTitle: holds the current value of the title input while editing
     
+    const [editingID, setEditingID] = useState(null);
+    const [editTitle, seteditTitle] = useState('');
     
 
     const handleAddMovie = () => {
@@ -36,9 +38,24 @@ export default function MovieWatchListMain() {
     //   - Sets editingId to the movie's id
     //   - Sets editTitle to the movie's current title
 
+    const handleStartEdit = (movie) => {
+        setEditingID(movie.id);
+        seteditTitle(movie.title);
+    }
+
     // TODO: Add a handleUpdateTitle(id) function that:
     //   - If editTitle is not empty, updates the matching movie's title in the movies array
     //   - Resets editingId to null and clears editTitle
+
+    const handleUpdateTitle = (id) => {
+        if (!editTitle.trim())
+            return;
+
+        setMovies(movies.map(m => m.id === id ? {movies, title: editTitle} ));
+
+        setEditingID(null);
+        seteditTitle('');
+    } 
 
     return (
         <div className="watchlist-container">
