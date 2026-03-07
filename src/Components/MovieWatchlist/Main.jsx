@@ -26,13 +26,18 @@ export default function MovieWatchListMain() {
         setMovies(movies.filter(movie => movie.id !== id));
     };
 
-    // TODO: Add a handleStartEdit(movie) function that:
-    //   - Sets editingId to the movie's id
-    //   - Sets editTitle to the movie's current title
+    const handleStartEdit = (movie) => {
+        setEditingId(movie.id);
+        setEditTitle(movie.title);
+    };
 
-    // TODO: Add a handleUpdateTitle(id) function that:
-    //   - If editTitle is not empty, updates the matching movie's title in the movies array
-    //   - Resets editingId to null and clears editTitle
+    const handleUpdateTitle = (id) => {
+        const trim = editTitle.trim();
+        if (!trim) return;
+        setMovies(movies.map(m => (m.id === id ? { ...m, title: trim } : m)));
+        setEditingId(null);
+        setEditTitle('');
+    };
 
     return (
         <div className="watchlist-container">
