@@ -16,7 +16,7 @@ export default function MovieWatchListMain() {
     // TODO: Add two new state variables for editing:
     const [editingId, setEditingId] = useState(null);
     const [editTitle, setEditTitle] = useState('');
-    
+
     const handleAddMovie = () => {
         if (title.trim()) {
             setMovies([...movies, { id: Date.now(), title, genre }]);
@@ -31,10 +31,19 @@ export default function MovieWatchListMain() {
     // TODO: Add a handleStartEdit(movie) function that:
     //   - Sets editingId to the movie's id
     //   - Sets editTitle to the movie's current title
+        const handleStartEdit = (movie) => {
+        setEditingId(movie.id);
+        setEditTitle(movie.title);
+    };
 
     // TODO: Add a handleUpdateTitle(id) function that:
     //   - If editTitle is not empty, updates the matching movie's title in the movies array
     //   - Resets editingId to null and clears editTitle
+
+
+    
+
+
 
     return (
         <div className="watchlist-container">
