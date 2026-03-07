@@ -114,6 +114,13 @@
 
 .movie-card-actions {
     margin-top: 12px;
+    padding: 8px;
+}
+
+.movie-card-actions button {
+    display: inline-block;
+    vertical-align: middle;
+    margin-left: 5px;
 }
 
 .btn-remove {
@@ -129,4 +136,69 @@
 
 .btn-remove:hover {
     background-color: #c62828;
+}
+
+.btn-edit {
+    background-color: #7c6af7;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    padding: 6px 12px;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 600;
+    transition: background-color 0.2s ease;
+}
+
+.btn-edit:hover {
+    background-color: #6251e0;
+}
+
+.edit-form {
+    background-color: #1a1a1a;
+    border-radius: 8px;
+    padding: 12px 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+}
+
+.edit-form input {
+    display: inline-block;
+    vertical-align: middle;
+    width: calc(100% - 170px);
+    padding: 10px 12px;
+    border-radius: 6px;
+    border: 1px solid #444;
+    background-color: #2a2a2a;
+    color: #fff;
+    font-size: 14px;
+    outline: none;
+}
+
+.edit-form button {
+    display: inline-block;
+    vertical-align: middle;
+    padding: 8px 12px;
+    border-radius: 6px;
+    border: none;
+    cursor: pointer;
+    font-weight: 600;
+    margin-left: 8px;
+}
+
+.edit-form button:nth-of-type(1) {
+    background-color: #4caf50;
+    color: #fff;
+}
+
+.edit-form button:nth-of-type(1):hover {
+    background-color: #43a047;
+}
+
+.edit-form button:nth-of-type(2) {
+    background-color: #616161;
+    color: #fff;
+}
+
+.edit-form button:nth-of-type(2):hover {
+    background-color: #4e4e4e;
 }
