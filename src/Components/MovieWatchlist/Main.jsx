@@ -17,7 +17,7 @@ export default function MovieWatchListMain() {
     //   - editingId: tracks which movie is currently being edited (null by default)
     //   - editTitle: holds the current value of the title input while editing
 
-    const [editingId, setEditingId] = useState(null);
+    const [editingId, setEditingId] = useState(null);   
     const [editTitle, setEditTitle] = useState('');
 
     const handleAddMovie = () => {
@@ -80,12 +80,33 @@ export default function MovieWatchListMain() {
             <div className="movies-list">
                 {movies.map(movie => (
                     <div key={movie.id}>
-                        {/* TODO: Check if this movie is being edited (editingId === movie.id).
-                             If yes, show an edit form with:
-                               - A text input bound to editTitle
-                               - A Save button that calls handleUpdateTitle(movie.id)
-                               - A Cancel button that resets editingId to null
-                             If no, render the MovieCard below and pass onUpdate to it */}
+                        {// Done: Check if this movie is being edited (editingId === movie.id).
+                            
+                    <div className="movies-list">
+                         {movies.map(movie => (
+                            <div key={movie.id}>
+                                 {editingId === movie.id ? (
+                                        <div className="edit-form">
+                                                 <input
+                                                    type="text"
+                                                    value={editTitle}
+                                                    onChange={(e) => setEditTitle(e.target.value)}
+                                                    onKeyPress={(e) => e.key === 'Enter' && handleUpdateTitle(movie.id)}
+                                                  />
+                                             <button onClick={() => handleUpdateTitle(movie.id)}>Save</button>
+                                              <button onClick={() => { setEditingId(null); setEditTitle(''); }}>Cancel</button>
+                                         </div>
+                        ) : (
+                            <MovieCard
+                                title={movie.title}
+                                genre={movie.genre}
+                                onRemove={() => handleRemoveMovie(movie.id)}
+                                onUpdate={() => handleStartEdit(movie)}
+                            />
+                        )}
+                    </div>
+                ))}
+            </div>}
                         <MovieCard
                             title={movie.title}
                             genre={movie.genre}
