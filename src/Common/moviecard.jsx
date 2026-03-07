@@ -9,6 +9,11 @@ const MovieCard = ({ title, genre, onRemove, onUpdate }) => {
                 <div className="movie-card-actions">
                     {/* TODO: Add an Edit button that calls onUpdate when clicked.
                          Only render it if the onUpdate prop is provided (similar to the Remove button below) */}
+                    {onUpdate && (
+                        <button onClick={onUpdate} className="btn-edit">
+                            Edit
+                        </button>
+                    )}
                     {onRemove && (
                         <button onClick={onRemove} className="btn-remove">
                             Remove
