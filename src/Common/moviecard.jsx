@@ -1,6 +1,6 @@
 import '../includes/common.css';
 
-const MovieCard = ({ title, genre, onRemove, onUpdate }) => {
+const MovieCard = ({ title, genre, onRemove, onUpdate, onEdit }) => {
     return (
         <div className="movie-card">
             <div className="movie-card-content">
@@ -14,6 +14,13 @@ const MovieCard = ({ title, genre, onRemove, onUpdate }) => {
                             Remove
                         </button>
                     )}
+                    {
+                        onEdit && (
+                            <button onClick={onEdit} className="btn-edit">
+                                Edit
+                            </button>
+                        )
+                    }
                 </div>
             </div>
         </div>
