@@ -9,6 +9,10 @@ export default function MovieWatchListMain() {
     const [totalCount, setTotalCount] = useState(0);
 
     // TODO: Add a useEffect that recalculates totalCount whenever the movies array changes
+    useEffect (() => {
+        setTotalCount(movies,length);
+    }, [movies]);
+
 
     // TODO: Add two new state variables for editing:
     //   - editingId: tracks which movie is currently being edited (null by default)
