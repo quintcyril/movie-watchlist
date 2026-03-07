@@ -43,6 +43,18 @@ export default function MovieWatchListMain() {
     //   - If editTitle is not empty, updates the matching movie's title in the movies array
     //   - Resets editingId to null and clears editTitle
 
+    const handleUpdateTitle =(id) => {
+        if (editTitle.trim()) {
+            setMovies(prev =>
+                prev.map(movie =>
+                    movie.id === id ? { ...movie, title: editTitle } : movie
+                )
+            );
+            setEditingId(null);
+            setEditTitle("");
+        }
+    }
+
     return (
         <div className="watchlist-container">
             <h1>Movie Watchlist</h1>
@@ -71,18 +83,27 @@ export default function MovieWatchListMain() {
             <div className="movies-list">
                 {movies.map(movie => (
                     <div key={movie.id}>
-                        {/* TODO: Check if this movie is being edited (editingId === movie.id).
-                             If yes, show an edit form with:
-                               - A text input bound to editTitle
-                               - A Save button that calls handleUpdateTitle(movie.id)
-                               - A Cancel button that resets editingId to null
-                             If no, render the MovieCard below and pass onUpdate to it */
-                             }
-                        <MovieCard
-                            title={movie.title}
-                            genre={movie.genre}
-                            onRemove={() => handleRemoveMovie(movie.id)}
-                        />
+                        {editingId === movie.id ? (
+                            <div className="edit-form">
+                                <input
+                                    type="text"
+                                    value={editTitle}
+                                    onChange={(e) => setEditTitle(e.target.value)}
+                                    onKeyPress={(e) => e.key === 'Enter' && handleUpdateTitle(movie.id)}
+                                />
+                                <button onClick={() => handleUpdateTitle(movie.id)}>Save</button>
+                                <button onClick={handleCancelEdit}>Cancel</button>
+                            </div>
+                        ) : (
+                             <div onClick={() => handleStartEdit(movie)} style={{ cursor: 'pointer' }}>
+                                <MovieCard
+                                    title={movie.title}
+                                    genre={movie.genre}
+                                    onRemove={() => handleRemoveMovie(movie.id)}
+                                    onUpdate={() => handleStartEdit(movie)}
+                                />
+                            </div>
+                        )}
                     </div>
                 ))}
             </div>
