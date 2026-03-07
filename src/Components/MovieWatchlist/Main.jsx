@@ -7,12 +7,11 @@ export default function MovieWatchListMain() {
     const [title, setTitle] = useState('');
     const [genre, setGenre] = useState('Action');
     const [totalCount, setTotalCount] = useState(0);
+    
+    useEffect(() => { setTotalCount(movies.length);}, [movies]); /*Add a useEffect that recalculates totalCount whenever the movies array changes*/
 
-    // TODO: Add a useEffect that recalculates totalCount whenever the movies array changes
-
-    // TODO: Add two new state variables for editing:
-    //   - editingId: tracks which movie is currently being edited (null by default)
-    //   - editTitle: holds the current value of the title input while editing
+    const [editingId, setEditingId] = useState(null); /*add movie currently edited*/
+    const [editTitle, setEditTitle] = useState(''); /*title value*/
 
     const handleAddMovie = () => {
         if (title.trim()) {
