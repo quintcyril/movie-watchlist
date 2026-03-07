@@ -130,3 +130,17 @@
 .btn-remove:hover {
     background-color: #c62828;
 }
+
+.btn-edit {
+    background-color: #ffff;
+    color: #0e0909;
+    border: none;
+    border-radius: 4px;
+    padding: 6px 12px;
+    cursor: pointer;
+    font-size: 13px;
+    transition: background-color 0.2s ease;
+}
+.btn-edit:hover {
+    background-color: #73dac2;
+}

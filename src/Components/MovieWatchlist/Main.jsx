@@ -80,22 +80,25 @@ export default function MovieWatchListMain() {
             <div className="movies-list">
                 {movies.map(movie => (
                     <div key={movie.id}>
-                        /* TODO: Check if this movie is being edited (editingId === movie.id).
+                       {/* TODO: Check if this movie is being edited (editingId === movie.id).
                              If yes, show an edit form with:
                                - A text input bound to editTitle
                                - A Save button that calls handleUpdateTitle(movie.id)
                                - A Cancel button that resets editingId to null
-                             If no, render the MovieCard below and pass onUpdate to it */
+                             If no, render the MovieCard below and pass onUpdate to it */}
                         { editingId == movie.id ? (
-                            <div> 
+                          <div className='movie-card'>
+                             <div className='movie-card-content'>
                                 <input 
                                     type= "text"
                                     value= {editTitle}
                                     onChange={(e) => setEditTitle(e.target.value)}
                                 />
-                                <button onClick={() => handleUpdateTitle(movie.id)}>Save</button>
-                                <button onClick={() => setEditingId(null)}>Cancel</button>
-
+                               <div className='movie-card-actions'>
+                                <button onClick={() => handleUpdateTitle(movie.id)} className='btn-edit'>Save</button>
+                                <button onClick={() => setEditingId(null)} className='btn-remove'>Cancel</button>
+                               </div>
+                              </div>
                             </div>
                         ) : (
                         <MovieCard
