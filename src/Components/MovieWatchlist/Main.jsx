@@ -93,8 +93,8 @@ export default function MovieWatchListMain() {
                                     value= {editTitle}
                                     onChange={(e) => setEditTitle(e.target.value)}
                                 />
-                                <button onclick={() => handleUpdateTitle(movie.id)}>Save</button>
-                                <button onclick={() => setEditingTitle(null)}>Cancel</button>
+                                <button onClick={() => handleUpdateTitle(movie.id)}>Save</button>
+                                <button onClick={() => setEditingTitle(null)}>Cancel</button>
 
                             </div>
                         ) : (
