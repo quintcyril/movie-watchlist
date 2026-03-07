@@ -53,10 +53,6 @@ export default function MovieWatchListMain() {
     };
 
 
-
-
-
-
     return (
         <div className="watchlist-container">
             <h1>Movie Watchlist</h1>
@@ -90,7 +86,26 @@ export default function MovieWatchListMain() {
                                - A text input bound to editTitle
                                - A Save button that calls handleUpdateTitle(movie.id)
                                - A Cancel button that resets editingId to null
-                             If no, render the MovieCard below and pass onUpdate to it */}
+                             If no, render the MovieCard below and pass onUpdate to it */
+                             editingId === movie.id ? (
+                            <div className="edit-form">
+                                <input
+                                    type="text"
+                                    value={editTitle}
+                                    onChange={(e) => setEditTitle(e.target.value)}
+                                    onKeyPress={(e) => e.key === 'Enter' && handleUpdateTitle(movie.id)}
+                                />
+                                <button onClick={() => handleUpdateTitle(movie.id)}>Save</button>
+                                <button onClick={handleCancelEdit}>Cancel</button>
+                            </div>
+                        ) : (
+                            <MovieCard
+                                title={movie.title}
+                                genre={movie.genre}
+                                onRemove={() => handleRemoveMovie(movie.id)}
+                                onUpdate={() => handleStartEdit(movie)}
+                            />
+                        )}
                         <MovieCard
                             title={movie.title}
                             genre={movie.genre}
