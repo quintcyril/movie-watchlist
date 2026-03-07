@@ -58,6 +58,8 @@ export default function MovieWatchListMain() {
                 <button onClick={handleAddMovie}>Add to Watchlist</button>
             </div>
 
+            {/* comment */}
+
             <div className="movies-list">
                 {movies.map(movie => (
                     <div key={movie.id}>
