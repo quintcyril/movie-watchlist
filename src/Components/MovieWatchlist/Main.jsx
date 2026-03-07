@@ -15,18 +15,24 @@ export default function MovieWatchListMain() {
     // TODO: Add two new state variables for editing:
     //   - editingId: tracks which movie is currently being edited (null by default)
     //   - editTitle: holds the current value of the title input while editing
+    const [editingId, setEditingId] = useState(null);
+    const [editTitle, setEditTitle] = useState('');
 
     const handleAddMovie = () => {
         if (title.trim()) {
-            setMovies([...movies, { id: Date.now(), title, genre }]);
+            setMovies(prev => [...prev, { id: Date.now(), title, genre }]);
             setTitle('');
         }
     };
 
     const handleRemoveMovie = (id) => {
-        setMovies(movies.filter(movie => movie.id !== id));
+        setMovies(prev => prev.filter(movie => movie.id !== id));
+        if (editingId === id) {
+            setEditingId(null);
+            setEditTitle('');
+        }
     };
-
+    
     // TODO: Add a handleStartEdit(movie) function that:
     //   - Sets editingId to the movie's id
     //   - Sets editTitle to the movie's current title
