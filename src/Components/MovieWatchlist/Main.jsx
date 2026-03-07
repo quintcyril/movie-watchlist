@@ -8,6 +8,8 @@ export default function MovieWatchListMain() {
     const [genre, setGenre] = useState('Action');
     const [totalCount, setTotalCount] = useState(0);
 
+
+    const [isEditing, setIsEditing] = useState(false);
     // TODO: Add a useEffect that recalculates totalCount whenever the movies array changes
 
     // TODO: Add two new state variables for editing:
