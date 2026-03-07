@@ -8,7 +8,6 @@ export default function MovieWatchListMain() {
     const [genre, setGenre] = useState('Action');
     const [totalCount, setTotalCount] = useState(0);
 
-    // TODO: Add a useEffect that recalculates totalCount whenever the movies array changes
     useEffect (() => {
         setTotalCount(movies.length);
     }, [movies]);
@@ -72,18 +71,29 @@ export default function MovieWatchListMain() {
             <div className="movies-list">
                 {movies.map(movie => (
                     <div key={movie.id}>
-                        {/* TODO: Check if this movie is being edited (editingId === movie.id).
-                             If yes, show an edit form with:
-                               - A text input bound to editTitle
-                               - A Save button that calls handleUpdateTitle(movie.id)
-                               - A Cancel button that resets editingId to null
-                             If no, render the MovieCard below and pass onUpdate to it */
-                             }
+                        {
+                             editingId === movie.id ? (
+                                <div className = "edit-form">
+                                    <input
+                                        type="text"
+                                        value={editTitle}>
+                                        onChange={(e) => setEditTitle(e.target.value)}
+                                    </input>
+                                    <button onClick={() => handleUpdateTitle(movie.id)}>
+                                        Save
+                                        </button>
+                                    <button onClick={() => setEditingId(null)}>
+                                        Cancel
+                                        </button>
+                                </div>
+                             ) : (
                         <MovieCard
                             title={movie.title}
                             genre={movie.genre}
                             onRemove={() => handleRemoveMovie(movie.id)}
+                            onUpdate = { () => handleStartEdit(movie)}
                         />
+                        )}
                     </div>
                 ))}
             </div>
