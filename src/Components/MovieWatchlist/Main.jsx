@@ -44,14 +44,22 @@ export default function MovieWatchListMain() {
 
     
     // TODO: Add a handleUpdateTitle(id) function that:
+        //   - If editTitle is not empty, updates the matching movie's title in the movies array
+        //   - Resets editingId to null and clears editTitle
 //start here\\
         const handleUpdateTitle = (id) =>{
             if(editTitle.trim()){
-                const update
+                const updatedmovies= 
+                movies.map(movies=>
+                    movie.id===id?{...movie,title:
+                        editTitle} : movie
+                );
+                setMovies(updatedmovies);
             }
+        setEditingId();
+        setEditTitle();
         }
-            //   - If editTitle is not empty, updates the matching movie's title in the movies array
-    //   - Resets editingId to null and clears editTitle
+
 
     return (
         <div className="watchlist-container">
