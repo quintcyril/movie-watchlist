@@ -39,9 +39,21 @@ export default function MovieWatchListMain() {
     // TODO: Add a handleUpdateTitle(id) function that:
     //   - If editTitle is not empty, updates the matching movie's title in the movies array
     //   - Resets editingId to null and clears editTitle
+        const handleUpdateTitle = (id) => {
+        if (editTitle.trim()) {
+            setMovies(movies.map(m => m.id === id ? { ...m, title: editTitle } : m));
+            setEditingId(null);
+            setEditTitle('');
+        }
+    };
+        
+        const handleCancelEdit = () => {
+        setEditingId(null);
+        setEditTitle('');
+    };
 
 
-    
+
 
 
 
