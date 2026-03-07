@@ -8,11 +8,14 @@ export default function MovieWatchListMain() {
     const [genre, setGenre] = useState('Action');
     const [totalCount, setTotalCount] = useState(0);
 
-    // TODO: Add a useEffect that recalculates totalCount whenever the movies array changes
+    // useEffect that recalculates totalCount whenever the movies array changes
+    useEffect(() => {
+        setTotalCount(movies.length);
+    }, [movies]);
 
-    // TODO: Add two new state variables for editing:
-    //   - editingId: tracks which movie is currently being edited (null by default)
-    //   - editTitle: holds the current value of the title input while editing
+    // new state variables for editing
+    const [editingId, setEditingId] = useState(null);
+    const [editTitle, setEditTitle] = useState('');
 
     const handleAddMovie = () => {
         if (title.trim()) {
@@ -25,13 +28,24 @@ export default function MovieWatchListMain() {
         setMovies(movies.filter(movie => movie.id !== id));
     };
 
-    // TODO: Add a handleStartEdit(movie) function that:
-    //   - Sets editingId to the movie's id
-    //   - Sets editTitle to the movie's current title
+    // start editing
+    const handleStartEdit = (movie) => {
+        setEditingId(movie.id);
+        setEditTitle(movie.title);
+    };
 
-    // TODO: Add a handleUpdateTitle(id) function that:
-    //   - If editTitle is not empty, updates the matching movie's title in the movies array
-    //   - Resets editingId to null and clears editTitle
+    // update movie title
+    const handleUpdateTitle = (id) => {
+        if (editTitle.trim()) {
+            setMovies(
+                movies.map(movie =>
+                    movie.id === id ? { ...movie, title: editTitle } : movie
+                )
+            );
+        }
+        setEditingId(null);
+        setEditTitle('');
+    };
 
     return (
         <div className="watchlist-container">
@@ -61,17 +75,24 @@ export default function MovieWatchListMain() {
             <div className="movies-list">
                 {movies.map(movie => (
                     <div key={movie.id}>
-                        {/* TODO: Check if this movie is being edited (editingId === movie.id).
-                             If yes, show an edit form with:
-                               - A text input bound to editTitle
-                               - A Save button that calls handleUpdateTitle(movie.id)
-                               - A Cancel button that resets editingId to null
-                             If no, render the MovieCard below and pass onUpdate to it */}
-                        <MovieCard
-                            title={movie.title}
-                            genre={movie.genre}
-                            onRemove={() => handleRemoveMovie(movie.id)}
-                        />
+                        {editingId === movie.id ? (
+                            <div>
+                                <input
+                                    type="text"
+                                    value={editTitle}
+                                    onChange={(e) => setEditTitle(e.target.value)}
+                                />
+                                <button onClick={() => handleUpdateTitle(movie.id)}>Save</button>
+                                <button onClick={() => setEditingId(null)}>Cancel</button>
+                            </div>
+                        ) : (
+                            <MovieCard
+                                title={movie.title}
+                                genre={movie.genre}
+                                onRemove={() => handleRemoveMovie(movie.id)}
+                                onUpdate={() => handleStartEdit(movie)}
+                            />
+                        )}
                     </div>
                 ))}
             </div>
