@@ -17,7 +17,7 @@ export default function MovieWatchListMain() {
     // TODO: Add two new state variables for editing:
     //   - editingId: tracks which movie is currently being edited (null by default)
     //   - editTitle: holds the current value of the title input while editing
-    const [editingId, setEditingID] = useState(null);
+    const [editingId, setEditingId] = useState(null);
     const [editTitle, setEditTitle] = useState('');
 
     const handleAddMovie = () => {
@@ -35,7 +35,7 @@ export default function MovieWatchListMain() {
     //   - Sets editingId to the movie's id
     //   - Sets editTitle to the movie's current title
     const handleStartEdit = (movie) => {
-        setEditingID(movie.id);
+        setEditingId(movie.id);
         setEditTitle(movie.title);
     }
 
@@ -48,7 +48,7 @@ export default function MovieWatchListMain() {
                 movie.id === id ? { ...movie, title: editTitle} : movie
             )]);
         }
-        setEditingID(null);
+        setEditingId(null);
         setEditTitle('');
     }
 
@@ -94,7 +94,7 @@ export default function MovieWatchListMain() {
                                     onChange={(e) => setEditTitle(e.target.value)}
                                 />
                                 <button onClick={() => handleUpdateTitle(movie.id)}>Save</button>
-                                <button onClick={() => setEditingTitle(null)}>Cancel</button>
+                                <button onClick={() => setEditingId(null)}>Cancel</button>
 
                             </div>
                         ) : (
