@@ -10,7 +10,7 @@ export default function MovieWatchListMain() {
 
     // TODO: Add a useEffect that recalculates totalCount whenever the movies array changes
     useEffect (() => {
-        setTotalCount(movies,length);
+        setTotalCount(movies.length);
     }, [movies]);
 
 
