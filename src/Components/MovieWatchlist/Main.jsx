@@ -13,6 +13,17 @@ export default function MovieWatchListMain() {
     // TODO: Add two new state variables for editing:
     //   - editingId: tracks which movie is currently being edited (null by default)
     //   - editTitle: holds the current value of the title input while editing
+    
+    
+    // Added editing state
+    useEffect(() => {
+        setTotalCount(movies.length);
+    }, [movies]);
+    
+    
+    // Added editing state
+    const [editingId, setEditingId] = useState(null);
+    const [editTitle, setEditTitle] = useState('');
 
     const handleAddMovie = () => {
         if (title.trim()) {
@@ -32,6 +43,21 @@ export default function MovieWatchListMain() {
     // TODO: Add a handleUpdateTitle(id) function that:
     //   - If editTitle is not empty, updates the matching movie's title in the movies array
     //   - Resets editingId to null and clears editTitle
+
+    // Added: start editing a movie
+    const handleStartEdit = (movie) => {
+        setEditingId(movie.id);
+        setEditTitle(movie.title);
+    };
+
+    // Added: update title for a movie being edited
+    const handleUpdateTitle = (id) => {
+        const trimmed = editTitle.trim();
+        if (!trimmed) return;
+        setMovies(movies.map(m => (m.id === id ? { ...m, title: trimmed } : m)));
+        setEditingId(null);
+        setEditTitle('');
+    };
 
     return (
         <div className="watchlist-container">
@@ -61,7 +87,8 @@ export default function MovieWatchListMain() {
             <div className="movies-list">
                 {movies.map(movie => (
                     <div key={movie.id}>
-                        {/* TODO: Check if this movie is being edited (editingId === movie.id).
+                        {
+                        /* TODO: Check if this movie is being edited (editingId === movie.id).
                              If yes, show an edit form with:
                                - A text input bound to editTitle
                                - A Save button that calls handleUpdateTitle(movie.id)
