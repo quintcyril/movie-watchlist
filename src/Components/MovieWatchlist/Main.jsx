@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, use } from 'react';
 import MovieCard from '../../Common/moviecard';
 import '../../includes/common.css';
 
@@ -8,11 +8,17 @@ export default function MovieWatchListMain() {
     const [genre, setGenre] = useState('Action');
     const [totalCount, setTotalCount] = useState(0);
 
-    // TODO: Add a useEffect that recalculates totalCount whenever the movies array changes
+    // DONE: Add a useEffect that recalculates totalCount whenever the movies array changes
+   useEffect(() => {
+        setTotalCount(movies.length);
+    }, [movies]);
 
-    // TODO: Add two new state variables for editing:
+    // DONE: Add two new state variables for editing:
     //   - editingId: tracks which movie is currently being edited (null by default)
     //   - editTitle: holds the current value of the title input while editing
+
+    const [editingId, setEditingId] = useState(null);
+    const [editTitle, setEditTitle] = useState('');
 
     const handleAddMovie = () => {
         if (title.trim()) {
@@ -25,13 +31,26 @@ export default function MovieWatchListMain() {
         setMovies(movies.filter(movie => movie.id !== id));
     };
 
-    // TODO: Add a handleStartEdit(movie) function that:
+    // DONE: Add a handleStartEdit(movie) function that:
     //   - Sets editingId to the movie's id
     //   - Sets editTitle to the movie's current title
+    const handleStartEdit = (movie) => {
+        setEditingId(movie.id);
+        setEditTitle(movie.title);
+    };
 
-    // TODO: Add a handleUpdateTitle(id) function that:
+
+    // DONE: Add a handleUpdateTitle(id) function that:
     //   - If editTitle is not empty, updates the matching movie's title in the movies array
     //   - Resets editingId to null and clears editTitle
+    
+    const handleUpdateTitle = (id) => {
+        const newTitle = editTitle.trim();
+        if (!newTitle) return;
+        setMovies(movies.map(m => m.id === id ? { ...m, title: newTitle } : m));
+        setEditingId(null);
+        setEditTitle('');
+    };
 
     return (
         <div className="watchlist-container">
