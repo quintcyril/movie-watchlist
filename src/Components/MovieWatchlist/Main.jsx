@@ -106,11 +106,6 @@ export default function MovieWatchListMain() {
                                 onUpdate={() => handleStartEdit(movie)}
                             />
                         )}
-                        <MovieCard
-                            title={movie.title}
-                            genre={movie.genre}
-                            onRemove={() => handleRemoveMovie(movie.id)}
-                        />
                     </div>
                 ))}
             </div>
