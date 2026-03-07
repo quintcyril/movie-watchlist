@@ -130,3 +130,21 @@
 .btn-remove:hover {
     background-color: #c62828;
 }
+
+.btn-edit {
+    background-color: #7c6af7; /* matches your "Add" button color */
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    padding: 6px 12px;
+    cursor: pointer;
+    font-size: 13px;
+    transition: background-color 0.2s ease;
+    margin-right: 8px; /* spacing between Edit and Remove */
+}
+
+.btn-edit:hover {
+    background-color: #6251e0; /* same hover effect as Add button */
+}
+
+
