@@ -7,6 +7,12 @@ export default function MovieWatchListMain() {
     const [title, setTitle] = useState('');
     const [genre, setGenre] = useState('Action');
     const [totalCount, setTotalCount] = useState(0);
+    const [editingId, setEditingId] = useState(null);
+    const [editTitle, setEditTitle] = useState("");
+
+    useEffect(()=>{
+        setTotalCount(movies.length);
+    },[movies])
 
     // TODO: Add a useEffect that recalculates totalCount whenever the movies array changes
 
@@ -32,6 +38,20 @@ export default function MovieWatchListMain() {
     // TODO: Add a handleUpdateTitle(id) function that:
     //   - If editTitle is not empty, updates the matching movie's title in the movies array
     //   - Resets editingId to null and clears editTitle
+
+    const handleStartEdit = (movie) =>{
+       setEditingId(movie.id);
+       setEditTitle(title.title);
+    }
+
+    const handleUpdateTitle =(id)=>{
+         if(editTitle.trim() !== ""){
+          setMovies(movies.map(movie => movie.id === id ?{movie, title:editTitle}: movie));
+         }
+
+         setEditingId(null);
+         setEditTitle("");
+    }
 
     return (
         <div className="watchlist-container">
