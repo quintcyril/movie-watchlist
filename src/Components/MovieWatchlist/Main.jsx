@@ -12,7 +12,7 @@ export default function MovieWatchListMain() {
     // TODO: Add a useEffect that recalculates totalCount whenever the movies array changes 
 
     useEffect(() => {
-        setTotalCount(movies,length);
+        setTotalCount(movies.length);
     }, [movies]);
 
     // TODO: Add two new state variables for editing:
@@ -51,7 +51,7 @@ export default function MovieWatchListMain() {
         if (!editTitle.trim())
             return;
 
-        setMovies(movies.map(m => m.id === id ? {movies, title: editTitle} ));
+        setMovies(movies.map(m => m.id === id ? { ...m, title: editTitle } : m));
 
         setEditingID(null);
         seteditTitle('');
@@ -90,12 +90,30 @@ export default function MovieWatchListMain() {
                                - A text input bound to editTitle
                                - A Save button that calls handleUpdateTitle(movie.id)
                                - A Cancel button that resets editingId to null
-                             If no, render the MovieCard below and pass onUpdate to it */}
-                        <MovieCard
-                            title={movie.title}
-                            genre={movie.genre}
-                            onRemove={() => handleRemoveMovie(movie.id)}
-                        />
+                             If no, render the MovieCard below and pass onUpdate to it */
+                            editingID === movie.id ? (
+                            <div className="edit-section">
+                                <input
+                                    type="text"
+                                    value={editTitle}
+                                    onChange={(e) => seteditTitle(e.target.value)}
+                                />
+                                <button onClick={() => handleUpdateTitle(movie.id)}>Save</button>
+                                <button onClick={() => {
+                                    setEditingID(null);
+                                    seteditTitle('');
+                                }}>Cancel</button>
+                            </div>
+                        ) : (
+                            <>
+                                <MovieCard
+                                    title={movie.title}
+                                    genre={movie.genre}
+                                    onRemove={() => handleRemoveMovie(movie.id)}
+                                />
+                                <button onClick={() => handleStartEdit(movie)}>Edit</button>
+                            </>
+                        )}
                     </div>
                 ))}
             </div>
