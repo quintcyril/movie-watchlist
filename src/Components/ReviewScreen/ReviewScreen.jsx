@@ -66,6 +66,13 @@ export default function ReviewScreen() {
             >
               Add Review {/* TODO: Implement add review for this movie */}
             </Button>
+            <Box sx={{ mt: 2, width: '100%' }}>
+              {(reviews[movie.id] || []).map((review, index) => (
+                <Typography key={index} variant="body1" sx={{ mb: 1 }}>
+                  {review.text}
+                </Typography>
+              ))}
+              </Box>
           </ListItem>
         ))}
       </List>
