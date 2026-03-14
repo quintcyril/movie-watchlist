@@ -9,7 +9,15 @@ router.get('/', (req, res) => {
 // Example: Add review
 router.post('/', (req, res) => {
   // Add review logic here
-  res.json({ success: true });
+  const {movieId, review} = req.body;
+
+  const newReview={
+    id: Date.now(),
+    movieId,
+    review
+  };
+
+  res.json({ success: true, newReview });
 });
 
 module.exports = router;
