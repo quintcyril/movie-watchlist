@@ -17,6 +17,29 @@ export default function ReviewScreen() {
   }, []);
 
   // TODO: Implement add review functionality for watched movies
+  const handleAddReview = (movieId) => {
+    const text = reviewInputs[movieId];
+    if (!text) return;
+
+    const movie = watchedMovies.find(m => m.id === movieId);
+    const updatedReviews = movie.reviews
+      ? [...movie.reviews, { id: Date.now(), text }]
+      : [{ id: Date.now(), text }];
+
+    fetch(`http://localhost:3001/movies/${movieId}`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ reviews: updatedReviews })
+    }).then(() => {
+      setWatchedMovies(prev =>
+        prev.map(m =>
+          m.id === movieId ? { ...m, reviews: updatedReviews } : m
+        )
+      );
+      setReviewInputs({ ...reviewInputs, [movieId]: "" });
+    });
+  };
+  
   // TODO: Implement edit/delete review functionality
 
   return (
