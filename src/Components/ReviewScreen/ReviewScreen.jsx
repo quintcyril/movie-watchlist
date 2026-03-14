@@ -17,7 +17,13 @@ export default function ReviewScreen() {
   }, []);
 
   // TODO: Implement add review functionality for watched movies
+      const handleAddReview = (id, review) => {
+        setWatchedMovies(
+          movies.map((movie) => movie.id === id ? {...movie. review} :movie)
+        );
+      };
   // TODO: Implement edit/delete review functionality
+      
 
   return (
     <Box sx={{ maxWidth: 600, mx: 'auto', mt: 6, p: 3, bgcolor: '#fafafa', borderRadius: 2, boxShadow: 3 }}>
@@ -29,8 +35,10 @@ export default function ReviewScreen() {
           <ListItem key={movie.id} sx={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
             <ListItemText primary={movie.title} secondary={movie.genre} />
             {/* TODO: Add review form and display reviews for this movie */}
+
             <Button variant="contained" color="primary" sx={{ mt: 1 }}>
               Add Review {/* TODO: Implement add review for this movie */}
+              {}
             </Button>
           </ListItem>
         ))}
