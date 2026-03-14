@@ -2,6 +2,8 @@
 const express = require('express');
 // Import the 'fs' module to work with the file system (reading/writing files)
 const fs = require('fs');
+
+const path = require('path');
 // Define the path to the movies.json file where movie data is stored
 const MOVIES_FILE = path.join(__dirname, 'movies.json');
 const router = express.Router();
