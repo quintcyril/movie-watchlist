@@ -17,8 +17,7 @@ router.post('/', (req, res) => {
     review
   };
 
- // res.json({ success: true });
- res.json(newReview);
+ res.json({ success: true });
 });
 
 module.exports = router;
