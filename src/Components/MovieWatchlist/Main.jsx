@@ -87,9 +87,9 @@ export default function MovieWatchListMain() {
                                - A Save button that calls handleUpdateTitle(movie.id)
                                - A Cancel button that resets editingId to null
                              If no, render the MovieCard below and pass onUpdate to it */
+                                
 
-                            
-                             }
+                        }
 
                         <MovieCard
                             title={movie.title}
