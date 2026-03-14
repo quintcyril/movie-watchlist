@@ -1,5 +1,9 @@
 const express = require('express');
 const router = express.Router();
+const fs = requires ('fs');
+const path = require (path); 
+
+const MOVIES_FILE = path.join(__dirname, 'movies.json');
 
 // Example: Get all reviews
 router.get('/', (req, res) => {

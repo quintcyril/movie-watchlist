@@ -1,1 +1,14 @@
-[]
+[
+  {
+    "id": 1773459129245,
+    "title": "Pirates of the Caribbeans",
+    "genre": "Action",
+    "watched": true
+  },
+  {
+    "id": 1773460067679,
+    "title": "Princess Mononoke ",
+    "genre": "Action",
+    "watched": false
+  }
+]
