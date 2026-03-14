@@ -1,11 +1,5 @@
 [
   {
-    "id": 1,
-    "title": "Inception",
-    "genre": "Sci-Fi",
-    "watched": true
-  },
-  {
     "id": 2,
     "title": "The Dark Knight",
     "genre": "Action",
