@@ -1,9 +1,5 @@
 const express = require('express');
 const router = express.Router();
-const fs = requires ('fs');
-const path = require (path); 
-
-const MOVIES_FILE = path.join(__dirname, 'movies.json');
 
 // Example: Get all reviews
 router.get('/', (req, res) => {
@@ -13,7 +9,16 @@ router.get('/', (req, res) => {
 // Example: Add review
 router.post('/', (req, res) => {
   // Add review logic here
-  res.json({ success: true });
+  const { movieId, review } = req.body;
+
+  const newReview = { 
+    id: Date.now(),
+    movieId,
+    review
+  };
+
+ // res.json({ success: true });
+ res.json(newReview);
 });
 
 module.exports = router;
