@@ -26,6 +26,11 @@ export default function ReviewScreen() {
     if ( !text || text.trim() === '') 
       return; //backend logic here to add review for movieId
 
+    const newReview = {
+      id: Date.now(),
+      text: text
+    }; 
+
     setReviews({
       ...prev,
       [movieId]: [...(reviews[movieId] || []),text ]
@@ -37,10 +42,36 @@ export default function ReviewScreen() {
     });
   };
  
-  const handleEditReview = (reviewId) => {
+  const handleEditReview = (movieId, reviewId, oldText) => {
+    const newText = prompt('Edit your review:', oldText);
+
+    if (!newText || newText.trim() === ''){
+      return;
+    }
+
+    const updatedReviews = (reviews[movieId] || []).map(review =>{
+      if (review.id === reviewId) {
+        return { ...review, text: newText };
+      }
+      return review;
+    });
+
+    setReviews({
+      ...reviews,
+      [movieId]: updatedReviews
+    });
   };
 
+
   const handleDeleteReview = (reviewId) => {
+    const updatedReviews = (reviews[movieId] || []).filter(
+      review => review.id !== reviewId);
+
+    setReviews({
+      ...reviews,
+      [movieId]: updatedReviews
+    });
+    
   };
   return (
     <Box sx={{ maxWidth: 600, mx: 'auto', mt: 6, p: 3, bgcolor: '#fafafa', borderRadius: 2, boxShadow: 3 }}>
