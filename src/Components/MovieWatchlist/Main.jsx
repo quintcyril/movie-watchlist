@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import MovieCard from '../../Common/moviecard';
 import '../../includes/common.css';
 
+//  Cardenas Branch - Movie Watchlist Main Component
 export default function MovieWatchListMain() {
     const [movies, setMovies] = useState([]);
     const [title, setTitle] = useState('');
