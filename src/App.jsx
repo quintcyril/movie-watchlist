@@ -1,17 +1,24 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { useState } from 'react';
+import './App.css';
+
 import MovieWatchListMain from './Components/MovieWatchlist/Main';
+import Login from './Components/MovieWatchlist/Login';
+import ReviewScreen from './Components/MovieWatchlist/ReviewScreen';
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [user, setUser] = useState(null);
+
+  if (!user) {
+    return <Login onLogin={setUser} />;
+  }
 
   return (
-    <>
+    <div>
+      <h1>Welcome, {user}</h1>
       <MovieWatchListMain />
-    </>
-  )
+      <ReviewScreen />
+    </div>
+  );
 }
 
-export default App
+export default App;
