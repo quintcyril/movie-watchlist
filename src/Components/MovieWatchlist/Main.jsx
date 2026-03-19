@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 // Import MovieCard component to display each movie
 import MovieCard from '../../Common/moviecard';
 import '../../includes/common.css';
+import { Box, Grid, TextField, Button, FormControl, InputLabel, Select, MenuItem, Typography } from '@mui/material';
 
 export default function MovieWatchListMain() {
     // State to store the list of movies
@@ -32,12 +33,32 @@ export default function MovieWatchListMain() {
     // Add a new movie to the watchlist
     const handleAddMovie = async () => {
         if (title.trim()) {
-            setMovies([...movies, { id: Date.now(), title, genre }]);
+            const newMovie = { id: Date.now(), title, genre, watched: false };
+            const res = await fetch('http://localhost:3001/movies', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(newMovie)
+            });
+            const added = await res.json();
+            setMovies([...movies, added]);
             setTitle('');
         }
     };
 
-    const handleRemoveMovie = (id) => {
+    // INSERTED LOGIC START 
+    const handleToggleWatched = async (id, watched) => {
+        const res = await fetch(`http://localhost:3001/movies/${id}`, {
+            method: 'PUT', // Changed PATCH to PUT to match backend
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ watched: !watched })
+        });
+        const updated = await res.json();
+        setMovies(movies.map(movie => movie.id === id ? updated : movie));
+    };
+    // INSERTED LOGIC END 
+
+    const handleRemoveMovie = async (id) => {
+        await fetch(`http://localhost:3001/movies/${id}`, { method: 'DELETE' });
         setMovies(movies.filter(movie => movie.id !== id));
     };
 
@@ -51,7 +72,7 @@ export default function MovieWatchListMain() {
     const handleUpdateTitle = async (id) => {
         if (editTitle.trim()) {
             const res = await fetch(`http://localhost:3001/movies/${id}`, {
-                method: 'PUT',
+                method: 'PUT', // Changed PATCH to PUT to match backend
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ title: editTitle })
             });
@@ -70,16 +91,16 @@ export default function MovieWatchListMain() {
 
     // Render the UI
     return (
-        <div className="watchlist-container">
+        <Box sx={{ p: 3 }}>
             <h1>Movie Watchlist</h1>
-            <div className="total-count">
+            <Box sx={{ mb: 2 }}>
                 <h2>Total Watched: {totalCount}</h2>
-            </div>
+            </Box>
 
-            <div className="input-section">
-                <input
-                    type="text"
-                    placeholder="Enter movie title"
+            <Box sx={{ display: 'flex', gap: 2, mb: 4 }}>
+                <TextField
+                    label="Enter movie title"
+                    variant="outlined"
                     value={title}
                     onChange={(e) => setTitle(e.target.value)}
                     onKeyPress={(e) => e.key === 'Enter' && handleAddMovie()}
@@ -104,13 +125,14 @@ export default function MovieWatchListMain() {
                     Add to Watchlist
                 </Button>
             </Box>
+
             {/* Display the list of movies */}
             <Grid container spacing={2}>
                 {movies.map((movie) => (
                     <Grid item xs={12} sm={6} md={4} key={movie.id}>
                         {/* If editing, show edit form; otherwise show MovieCard */}
                         {editingId === movie.id ? (
-                            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+                            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1, p: 2, border: '1px solid #ddd', borderRadius: 1 }}>
                                 <TextField
                                     label="Edit Title"
                                     variant="outlined"

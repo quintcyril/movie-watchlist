@@ -27,7 +27,8 @@ function Login() {
       } else {
         setError("Invalid username or password");
       }
-    } catch (err) {
+    } catch { 
+      // Removed the 'err' variable here since it wasn't being used
       setError("Error fetching user data");
     }
   };
