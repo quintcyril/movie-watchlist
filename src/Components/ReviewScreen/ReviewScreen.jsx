@@ -40,7 +40,31 @@ export default function ReviewScreen() {
     const text =  reviewInputs[movieId];
 
     if ( !text || text.trim() === '') 
-      return; //backend logic here to add review for movieId
+      return; 
+    
+    fetch ('http://localhost:3001/reviews', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        movieId,
+        text
+      })
+    })
+    .then(res => res.json())
+    .then(newReview => {
+      setReviews({
+        ...reviews,
+        [movieId]: [...(reviews[movieId] || []),
+          { id: newReview.id, text: newReview.review }
+      ]
+      });
+      setReviewInputs({
+        ...reviewInputs,
+        [movieId]: '' // Clear input after adding review
+      });
+    });
 
     const newReview = {
       id: Date.now(),
