@@ -21,7 +21,7 @@ export default function ReviewScreen() {
 
   // TODO: Implement add review functionality for watched movies
   const handleAddReview = (movieId) => {
-    const text =  reviewInputes[movieId];
+    const text =  reviewInputs[movieId];
 
     if ( !text || text.trim() === '') 
       return; //backend logic here to add review for movieId
