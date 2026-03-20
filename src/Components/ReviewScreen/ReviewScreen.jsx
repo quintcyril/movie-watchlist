@@ -63,7 +63,7 @@ export default function ReviewScreen() {
   };
 
 
-  const handleDeleteReview = (reviewId) => {
+  const handleDeleteReview = (movieId, reviewId) => {
     const updatedReviews = (reviews[movieId] || []).filter(
       review => review.id !== reviewId);
 
