@@ -10,7 +10,7 @@ import TextField  from '@mui/material/TextField';
 export default function ReviewScreen() {
   const [watchedMovies, setWatchedMovies] = useState([]);
   const [reviews, setReviews] = useState({}); // { movieId: [{ id, text }] }
-  const [reviewInputs, setReviewInputs] = useState(''); // For new review input
+  const [reviewInputs, setReviewInputs] = useState({}); // For new review input
 
   useEffect(() => {
     // Retrieve watched movies from backend
@@ -31,10 +31,10 @@ export default function ReviewScreen() {
       text: text
     }; 
 
-    setReviews({
+    setReviews(prev => ({
       ...prev,
-      [movieId]: [...(reviews[movieId] || []),text ]
-    });
+      [movieId]: [...(prev[movieId] || []),newReview ]
+    }));
 
     setReviewInputs({
       ...reviewInputs,
@@ -99,11 +99,39 @@ export default function ReviewScreen() {
             </Button>
             <Box sx={{ mt: 2, width: '100%' }}>
               {(reviews[movie.id] || []).map((review, index) => (
+                <Box
+                  key={review.id}
+                  sx={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                    mb: 1,
+                    width: '100%'
+                  }}
+                >
                 <Typography key={index} variant="body1" sx={{ mb: 1 }}>
                   {review.text}
                 </Typography>
+
+                <Box>
+                <Button
+                  size="small"
+                        onClick={() => handleEditReview(movie.id, review.id, review.text)}
+                >
+                  Edit
+                </Button>
+
+                <Button
+                  size="small"
+                     color="error"
+                        onClick={() => handleDeleteReview(movie.id, review.id)}
+                  >
+                  Delete
+                </Button>
+                 </Box>
+                </Box>
               ))}
-              </Box>
+            </Box>
           </ListItem>
         ))}
       </List>
