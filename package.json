@@ -13,6 +13,8 @@
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.1",
     "@mui/material": "^7.3.9",
+    "cors": "^2.8.6",
+    "express": "^5.2.1",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
     "react-router-dom": "^7.13.1"
@@ -30,5 +32,18 @@
   },
   "overrides": {
     "vite": "^8.0.0-beta.13"
-  }
+  },
+  "description": "This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.",
+  "main": "eslint.config.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/quintcyril/movie-watchlist.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/quintcyril/movie-watchlist/issues"
+  },
+  "homepage": "https://github.com/quintcyril/movie-watchlist#readme"
 }
