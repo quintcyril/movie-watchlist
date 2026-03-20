@@ -48,7 +48,7 @@ function Login() {
           p: 4,
           borderRadius: 2,
           boxShadow: 3,
-          bgcolor: "white",
+          bgcolor: '#45ADED',
           minWidth: 320,
           display: "flex",
           flexDirection: "column",
@@ -64,6 +64,7 @@ function Login() {
           value={username}
           onChange={(e) => setUsername(e.target.value)}
           required
+          sx={{bgcolor: "white", borderRadius: 1,}}
         />
         <TextField
           label="Password"
@@ -72,6 +73,7 @@ function Login() {
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           required
+          sx={{bgcolor: "white", borderRadius: 1,}}
         />
         <Button type="submit" variant="contained" color="primary" fullWidth>
           Login
