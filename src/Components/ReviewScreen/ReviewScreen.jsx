@@ -89,21 +89,40 @@ export default function ReviewScreen() {
       return;
     }
 
-    const updatedReviews = (reviews[movieId] || []).map(review =>{
-      if (review.id === reviewId) {
-        return { ...review, text: newText };
+    fetch(`http://localhost:3001/reviews/${reviewId}`, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      review: newText
+    })
+  })
+    .then(res => res.json())
+    .then(updatedReview => {
+      const updatedReviews = (reviews[movieId] || []).map(review =>{
+       if (review.id === reviewId) {
+        return { 
+          id: updatedReview.id,
+          text: updatedReview.review
+         };
       }
       return review;
     });
 
-    setReviews({
-      ...reviews,
-      [movieId]: updatedReviews
+      setReviews({
+        ...reviews,
+         [movieId]: updatedReviews
+      });
     });
   };
 
 
   const handleDeleteReview = (movieId, reviewId) => {
+    fetch(`http://localhost:3001/reviews/${reviewId}`, {
+      method: 'DELETE'
+    })
+    .then(() => {
     const updatedReviews = (reviews[movieId] || []).filter(
       review => review.id !== reviewId);
 
@@ -111,7 +130,7 @@ export default function ReviewScreen() {
       ...reviews,
       [movieId]: updatedReviews
     });
-    
+    });
   };
   return (
     <Box sx={{ maxWidth: 600, mx: 'auto', mt: 6, p: 3, bgcolor: '#fafafa', borderRadius: 2, boxShadow: 3 }}>
