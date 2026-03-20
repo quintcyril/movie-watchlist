@@ -39,8 +39,8 @@ export default function ReviewScreen() {
   const handleAddReview = (movieId) => {
     const text =  reviewInputs[movieId];
 
-    if ( !text || text.trim() === '') 
-      return; 
+    if ( !text || text.trim() === '') {
+      return; }
     
     fetch ('http://localhost:3001/reviews', {
       method: 'POST',
@@ -66,7 +66,7 @@ export default function ReviewScreen() {
       });
     });
   };
-  
+
   const handleEditReview = (movieId, reviewId, oldText) => {
     const newText = prompt('Edit your review:', oldText);
 
@@ -142,7 +142,7 @@ export default function ReviewScreen() {
               Add Review {/* TODO: Implement add review for this movie */}
             </Button>
             <Box sx={{ mt: 2, width: '100%' }}>
-              {(reviews[movie.id] || []).map((review, index) => (
+              {(reviews[movie.id] || []).map((review) => (
                 <Box
                   key={review.id}
                   sx={{
@@ -153,14 +153,14 @@ export default function ReviewScreen() {
                     width: '100%'
                   }}
                 >
-                <Typography key={index} variant="body1" sx={{ mb: 1 }}>
-                  {review.text}
+                <Typography variant="body1" sx={{ mb: 1, color: 'black', flex: 1 }}>
+                  {review.text || 'No review text '}
                 </Typography>
 
                 <Box>
                 <Button
                   size="small"
-                        onClick={() => handleEditReview(movie.id, review.id, review.text)}
+                        onClick={() => handleEditReview(movie.id, review.id, review.review)}
                 >
                   Edit
                 </Button>
