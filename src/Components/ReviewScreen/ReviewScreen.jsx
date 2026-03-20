@@ -29,7 +29,7 @@ export default function ReviewScreen() {
             }
             groupedReviews[review.movieId].push({ 
               id: review.id, 
-              text: review.text });
+              text: review.review });
         });
         setReviews(groupedReviews);
       });
@@ -48,8 +48,8 @@ export default function ReviewScreen() {
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-        movieId,
-        text
+        movieId:movieId,
+        review: text
       })
     })
     .then(res => res.json())
@@ -65,23 +65,8 @@ export default function ReviewScreen() {
         [movieId]: '' // Clear input after adding review
       });
     });
-
-    const newReview = {
-      id: Date.now(),
-      text: text
-    }; 
-
-    setReviews(prev => ({
-      ...prev,
-      [movieId]: [...(prev[movieId] || []),newReview ]
-    }));
-
-    setReviewInputs({
-      ...reviewInputs,
-      [movieId]: '' // Clear input after adding review
-    });
   };
- 
+  
   const handleEditReview = (movieId, reviewId, oldText) => {
     const newText = prompt('Edit your review:', oldText);
 
