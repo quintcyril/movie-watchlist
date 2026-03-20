@@ -17,6 +17,22 @@ export default function ReviewScreen() {
     fetch('http://localhost:3001/movies')
       .then(res => res.json())
       .then(data => setWatchedMovies(data.filter(movie => movie.watched)));
+
+      fetch ('http://localhost:3001/reviews')
+        .then(res => res.json())
+        .then (data => {
+          const groupedReviews = {};
+
+          data.forEach(review => {
+            if (!groupedReviews[review.movieId]) {
+              groupedReviews[review.movieId] = [];
+            }
+            groupedReviews[review.movieId].push({ 
+              id: review.id, 
+              text: review.text });
+        });
+        setReviews(groupedReviews);
+      });
   }, []);
 
   // TODO: Implement add review functionality for watched movies
