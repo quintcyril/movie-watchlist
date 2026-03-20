@@ -22,5 +22,11 @@
     "title": "Avatar 2",
     "genre": "Action",
     "watched": true
+  },
+  {
+    "id": 1773928285125,
+    "title": "Madagascar",
+    "genre": "Comedy",
+    "watched": false
   }
 ]
