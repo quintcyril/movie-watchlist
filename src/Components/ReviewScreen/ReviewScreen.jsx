@@ -13,6 +13,8 @@ export default function ReviewScreen() {
   const [toBeReviewed, setToBeReviewed] = useState(null)
   const [reviews, setReviews] = useState([]);
   const [newReview, setNewReview] = useState('')
+  const [editingReview, setEditingReview] = useState(null)
+
   useEffect(() => {
     // Retrieve watched movies from backend
     fetch('http://localhost:3001/movies')
@@ -44,7 +46,7 @@ export default function ReviewScreen() {
       });
 
       const data = await res.json();
-
+      console.log(data);
       setReviews(prev => [...prev, data]);
 
       setNewReview('');
@@ -54,7 +56,29 @@ export default function ReviewScreen() {
       console.log('not successful send \nError: ', error);
     }
   };
+
   // TODO: Implement edit/delete review functionality
+  const StartEditReview = (id) => {
+    setEditingReview(id);
+  }
+
+  const EditReview = (id) => {
+
+  }
+
+  const DeleteReview = async (id) => {
+    console.log(id);
+    try {
+      const res = fetch(`http://localhost:3001/reviews/${id}`, {
+        method: 'DELETE'
+      });
+
+      const updatedReviews = reviews.filter(r => r.id != id);
+      setReviews(updatedReviews);
+    } catch (error) {
+      console.log('Not successful Deletion \n Error: ', error)
+    }
+  }
 
   return (
     <Box sx={{ maxWidth: 600, mx: 'auto', mt: 6, p: 3, bgcolor: '#fafafa', borderRadius: 2, boxShadow: 3 }}>
@@ -63,7 +87,7 @@ export default function ReviewScreen() {
       </Typography>
       <List>
         {watchedMovies.map(movie => {
-          const review = reviews.find(r => r.movieId === movie.id); // get review object if exists
+          const review = reviews.find(r => r.movieId === movie.id);
 
           return (
             <ListItem
@@ -78,10 +102,33 @@ export default function ReviewScreen() {
               />
 
               {review ? (
-                <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
-                  <span style={{ fontWeight: 500, color: 'black' }}>Review: </span>
-                  {review.review}
-                </Typography>
+                <>
+                  <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
+                    <span style={{ fontWeight: 500, color: 'black' }}>Review: </span>
+                    {review.review}
+                  </Typography>
+                  
+                    <Box sx={{ display: 'flex', gap: 1, mt: 1 }}>
+                      <Button variant="contained" color='warning'>
+                        Edit
+                      </Button>
+
+                      <Button
+                        variant="outlined"
+                        color="error"
+                        sx={{
+                          '&:hover': {
+                            backgroundColor: '#ffebee',
+                            borderColor: 'red'
+                          }
+                        }}
+                        onClick={ () => DeleteReview(review.id)}
+                      >
+                        Delete
+                      </Button>
+                    </Box>
+                  
+                </>
               ) : toBeReviewed === movie.id ? (
                 <>
                   <TextField
@@ -99,15 +146,34 @@ export default function ReviewScreen() {
                     Submit
                   </Button>
                 </>
-              ) : (
-                <Button
-                  variant="contained"
-                  color="primary"
-                  sx={{ mt: 1 }}
-                  onClick={() => StartAddReview(movie.id)}
-                >
-                  Add Review
-                </Button>
+              ) : editingReview === movie.id ?(
+                  <>
+                    <TextField
+                    multiline
+                    rows={3}
+                    value={newReview}
+                    // onChange={(e) => setNewReview(e.target.value)}
+                  />
+                    <Button
+                    variant="contained"
+                    color="secondary"
+                    sx={{ mt: 2 }}
+                    // onClick={() => AddReview(movie.id)}
+                  >
+                    Submit
+                  </Button>
+                  </>
+              ): (
+                <>
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    sx={{ mt: 1 }}
+                    onClick={() => StartAddReview(movie.id)}
+                  >
+                    Add Review
+                  </Button>
+                </>
               )}
             </ListItem>
           );

@@ -5,19 +5,14 @@ const path = require('path');
 const MOVIES_FILE = path.join(__dirname, 'reviews.json');
 const router = express.Router();
 
-// GET all reviews
 router.get('/', (req, res) => {
-  // Read reviews from file
-  const reviews = JSON.parse(fs.readFileSync(MOVIES_FILE, 'utf-8'));
+  const reviews = JSON.parse(fs.readFileSync(MOVIES_FILE));
   res.json(reviews);
 });
 
-// POST a new review
 router.post('/', (req, res) => {
-  // Read current reviews
-  const reviews = JSON.parse(fs.readFileSync(MOVIES_FILE, 'utf-8'));
+  const reviews = JSON.parse(fs.readFileSync(MOVIES_FILE));
 
-  // Make sure req.body has movieId and review
   const { movieId, review } = req.body;
 
   if (!movieId || !review) {
@@ -32,10 +27,19 @@ router.post('/', (req, res) => {
 
   reviews.push(newReview);
 
-  // Write updated reviews back to file
-  fs.writeFileSync(MOVIES_FILE, JSON.stringify(reviews, null, 2), 'utf-8');
+  fs.writeFileSync(MOVIES_FILE, JSON.stringify(reviews, null, 2));
 
-  res.status(201).json(newReview);
+  // res.status(201).json(newReview);
 });
+
+router.delete('/:id', (req,res) => {
+  const id = parseInt(req.params.id);
+  console.log('server side: ', id)
+  const reviews = JSON.parse(fs.readFileSync(MOVIES_FILE));
+
+  const newReviews = reviews.filter((r) => r.id != id);
+  fs.writeFileSync(MOVIES_FILE, JSON.stringify(newReviews,null,2));
+  res.json({ success: true });
+})
 
 module.exports = router;
