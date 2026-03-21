@@ -31,7 +31,7 @@ export default function ReviewScreen() {
       : [{ id: Date.now(), text }];
 
     fetch(`http://localhost:3001/movies/${movieId}`, {
-      method: 'PATCH',
+      method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ reviews: updatedReviews })
     }).then(() => {
