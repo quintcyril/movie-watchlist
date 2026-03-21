@@ -72,6 +72,21 @@ const handleDeleteReview = (movieId, reviewIndex) => {
           <ListItem key={movie.id} sx={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
             <ListItemText primary={movie.title} secondary={movie.genre} />
             {/* TODO: Add review form and display reviews for this movie */}
+            <TextField
+              label="Write a review"
+              variant="outlined"
+              size="small"
+              fullWidth
+              sx={{ mt: 1 }}
+              value={newReview[movie.id] || ''}
+              onChange={(e) =>
+                setNewReview((prev) => ({
+                  ...prev,
+                  [movie.id]: e.target.value
+                }))
+              }
+              />
+              
             <Button variant="contained" color="primary" sx={{ mt: 1 }}>
               Add Review {/* TODO: Implement add review for this movie */}
             </Button>
