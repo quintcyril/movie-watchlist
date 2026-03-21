@@ -8,5 +8,9 @@
     "username": "bob",
     "password": "securepass",
     "name": "Bob Johnson"
+  },
+  {
+    "username": "admin",
+    "password": "admin"
   }
 ]

@@ -11,14 +11,17 @@ function Login() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const [isRegister, setIsRegister] = useState(false);
+  const [registerSuccess, setRegisterSuccess] = useState("");
 
+  // Handle login form submit
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await fetch("/users.json");
+      const response = await fetch("http://localhost:3001/users");
       const users = await response.json();
       const user = users.find(
-        (u) => u.username === username && u.password === password
+        (u) => u.username === username && u.password === password,
       );
       if (user) {
         login(user);
@@ -29,6 +32,31 @@ function Login() {
       }
     } catch (err) {
       setError("Error fetching user data");
+    }
+  };
+
+  const handleRegister = async (e) => {
+    e.preventDefault();
+    setError("");
+    setRegisterSuccess("");
+    try {
+      const newUser = { username, password };
+      const res = await fetch("http://localhost:3001/users", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(newUser),
+      });
+      if (res.ok) {
+        setRegisterSuccess("Registration successful! You can now log in.");
+        setUsername("");
+        setPassword("");
+        setIsRegister(false);
+      } else {
+        const data = await res.json();
+        setError(data.error || "Registration failed. Try again.");
+      }
+    } catch (err) {
+      setError("Error registering user");
     }
   };
 
@@ -43,7 +71,7 @@ function Login() {
     >
       <Box
         component="form"
-        onSubmit={handleSubmit}
+        onSubmit={isRegister ? handleRegister : handleSubmit}
         sx={{
           p: 4,
           borderRadius: 2,
@@ -56,7 +84,7 @@ function Login() {
         }}
       >
         <Typography variant="h5" align="center" gutterBottom>
-          Login
+          {isRegister ? "Register" : "Login"}
         </Typography>
         <TextField
           label="Username"
@@ -74,9 +102,24 @@ function Login() {
           required
         />
         <Button type="submit" variant="contained" color="primary" fullWidth>
-          Login
+          {isRegister ? "Register" : "Login"}
+        </Button>
+        <Button
+          variant="text"
+          color="secondary"
+          fullWidth
+          onClick={() => {
+            setIsRegister((prev) => !prev);
+            setError("");
+            setRegisterSuccess("");
+          }}
+        >
+          {isRegister
+            ? "Already have an account? Login"
+            : "Don't have an account? Register"}
         </Button>
         {error && <Alert severity="error">{error}</Alert>}
+        {registerSuccess && <Alert severity="success">{registerSuccess}</Alert>}
       </Box>
     </Box>
   );
