@@ -10,7 +10,7 @@ export default function ReviewScreen() {
   const [watchedMovies, setWatchedMovies] = useState([]);
   const [reviews, setReviews] = useState({});
   const [savedReviews, setSavedReviews] = useState([]);
-  const [editingId, setEditingId] = useSatte(null);
+  const [editingId, setEditingId] = useState(null);
   
   useEffect(() => {
     // Retrieve watched movies from backend
