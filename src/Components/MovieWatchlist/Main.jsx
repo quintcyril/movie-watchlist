@@ -143,7 +143,7 @@ export default function MovieWatchListMain() {
             </Typography>
             {/* Display total count of movies */}
             <Box sx={{ mb: 3 }}>
-                <Typography variant="h6">Total Watched: {totalCount}</Typography>
+                <Typography variant="h6">Total Movies: {totalCount}</Typography>
             </Box>
             {/* Input fields for adding a new movie */}
             <Box sx={{ display: 'flex', gap: 2, mb: 4 }}>
