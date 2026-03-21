@@ -86,13 +86,83 @@ const handleDeleteReview = (movieId, reviewIndex) => {
                 }))
               }
               />
+
+            <Button variant="contained" color="primary" sx={{ mt: 1 }} onClick={() => handleAddReview(movie.id)}>
               
-            <Button variant="contained" color="primary" sx={{ mt: 1 }}>
               Add Review {/* TODO: Implement add review for this movie */}
             </Button>
+             {(reviews[movie.id] || []).map((review, index) => {
+              const isEditing = editingIndex === `${movie.id}-${index}`;
+
+              return (
+                <Box
+                  key={index}
+                  sx={{
+                    width: '100%',
+                    mt: 2,
+                    p: 2,
+                    bgcolor: '#fff',
+                    borderRadius: 1,
+                    boxShadow: 1
+                  }}
+                >
+                  {isEditing ? (
+                    <>
+                      <TextField
+                        fullWidth
+                        size="small"
+                        value={editedText}
+                        onChange={(e) => setEditedText(e.target.value)}
+                      />
+                      <Box sx={{ display: 'flex', gap: 1, mt: 1 }}>
+                        <Button
+                          variant="contained"
+                          color="success"
+                          onClick={() => handleSaveEdit(movie.id, index)}
+                        >
+                          Save
+                        </Button>
+                        <Button
+                          variant="outlined"
+                          color="secondary"
+                          onClick={() => {
+                            setEditingIndex(null);
+                            setEditedText('');
+                          }}
+                        >
+                          Cancel
+                        </Button>
+                      </Box>
+                    </>
+                  ) : (
+                    <>
+                      <Typography variant="body1">{review}</Typography>
+                      <Box sx={{ display: 'flex', gap: 1, mt: 1 }}>
+                        <Button
+                          variant="outlined"
+                          color="warning"
+                          onClick={() => handleEditReview(movie.id, index)}
+                        >
+                          Edit
+                        </Button>
+                        <Button
+                          variant="outlined"
+                          color="error"
+                          onClick={() => handleDeleteReview(movie.id, index)}
+                        >
+                          Delete
+                        </Button>
+                      </Box>
+                    </>
+                  )}
+                </Box>
+              );
+            })}
           </ListItem>
         ))}
       </List>
     </Box>
+
+
   );
 }
