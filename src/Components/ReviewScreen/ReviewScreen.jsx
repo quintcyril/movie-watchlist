@@ -154,8 +154,8 @@ export default function ReviewScreen() {
               }
               sx={{ mt: 1 }}
             />
-            
-            <Button variant="contained" color="primary" sx={{ mt: 1 }}>
+
+            <Button variant="contained" color="primary" sx={{ mt: 1 }} onClick={() => handleAddReview(movie.id)}>
               Add Review {/* TODO: Implement add review for this movie */}
             </Button>
           </ListItem>
