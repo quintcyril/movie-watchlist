@@ -1,0 +1,14 @@
+{
+  "reviews": [
+    {
+      "id": 1,
+      "movieId": 1,
+      "review": "Great movie!"
+    },
+    {
+      "id": 2,
+      "movieId": 2,
+      "review": "Pretty good, but a bit long."
+    }
+  ]
+}

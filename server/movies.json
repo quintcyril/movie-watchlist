@@ -3,7 +3,7 @@
     "id": 1,
     "title": "Inception",
     "genre": "Sci-Fi",
-    "watched": true
+    "watched": false
   },
   {
     "id": 2,
@@ -21,6 +21,14 @@
     "id": 1773251325903,
     "title": "Avatar 2",
     "genre": "Action",
-    "watched": true
+    "watched": true,
+    "review": "dsaddsad"
+  },
+  {
+    "id": 1774058360408,
+    "title": "GOD",
+    "genre": "Horror",
+    "watched": true,
+    "review": "GOATED"
   }
 ]
