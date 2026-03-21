@@ -31,7 +31,7 @@ export default function ReviewScreen() {
       : [{ id: Date.now(), text }];
 
     fetch(`http://localhost:3001/movies/${movieId}`, {
-      method: 'POST',
+      method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ reviews: updatedReviews })
     }).then(() => {
@@ -50,7 +50,7 @@ export default function ReviewScreen() {
     const updatedReviews = movie.reviews.filter(r => r.id !== reviewId);
 
     fetch(`http://localhost:3001/movies/${movieId}`, {
-      method: 'PATCH',
+      method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ reviews: updatedReviews })
     }).then(() => {
@@ -75,7 +75,7 @@ export default function ReviewScreen() {
     );
 
     fetch(`http://localhost:3001/movies/${movieId}`, {
-      method: 'PATCH',
+      method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ reviews: updatedReviews })
     }).then(() => {
@@ -96,7 +96,7 @@ export default function ReviewScreen() {
       </Typography>
       <List>
         {watchedMovies.map(movie => (
-          <ListItem key={movie.id} sx={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
+          <ListItem key={movie.id} sx={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', mb: 3 }}>
             <ListItemText primary={movie.title} secondary={movie.genre} />
             {/* TODO: Add review form and display reviews for this movie */}
             {movie.reviews && movie.reviews.map(review => (
