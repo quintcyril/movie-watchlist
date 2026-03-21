@@ -62,6 +62,11 @@ export default function ReviewScreen() {
     });
   };
 
+   const handleEditReview = (review) => {
+    setEditingReview(review.id);
+    setEditText(review.text);
+  };
+
   return (
     <Box sx={{ maxWidth: 600, mx: 'auto', mt: 6, p: 3, bgcolor: '#fafafa', borderRadius: 2, boxShadow: 3 }}>
       <Typography variant="h4" align="center" gutterBottom>
