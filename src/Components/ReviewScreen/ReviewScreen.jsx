@@ -99,6 +99,47 @@ export default function ReviewScreen() {
           <ListItem key={movie.id} sx={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
             <ListItemText primary={movie.title} secondary={movie.genre} />
             {/* TODO: Add review form and display reviews for this movie */}
+            {movie.reviews && movie.reviews.map(review => (
+              <Box key={review.id} sx={{ width: '100%', mb: 1 }}>
+               
+                {editingReview === review.id ? (
+                  <>
+                    <TextField
+                      fullWidth
+                      size="small"
+                      value={editText}
+                      onChange={(e) => setEditText(e.target.value)}
+                    />
+                    <Button
+                      variant="contained"
+                      size="small"
+                      sx={{ mt: 1, mr: 1 }}
+                      onClick={() => handleSaveEdit(movie.id)}
+                    >
+                      Save
+                    </Button>
+                  </>
+                ) : (
+                  <>
+                    <Typography variant="body2">{review.text}</Typography>
+                    <Button
+                      size="small"
+                      onClick={() => handleEditReview(review)}
+                    >
+                      Edit
+                    </Button>
+                    <Button
+                      size="small"
+                      color="error"
+                      onClick={() => handleDeleteReview(movie.id, review.id)}
+                    >
+                      Delete
+                    </Button>
+                  </>
+                )}
+
+              </Box>
+            ))}
             <Button variant="contained" color="primary" sx={{ mt: 1 }}>
               Add Review {/* TODO: Implement add review for this movie */}
             </Button>
