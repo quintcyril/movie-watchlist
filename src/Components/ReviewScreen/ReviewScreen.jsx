@@ -37,6 +37,13 @@ export default function ReviewScreen() {
 
   // TODO: Implement edit/delete review functionality
 
+  const handleDeleteReview = (movieId, index) => {
+  setReviews(prev => ({
+    ...prev,
+    [movieId]: prev[movieId].filter((_, i) => i !== index)
+  }));
+};
+
   return (
     <Box sx={{ maxWidth: 600, mx: 'auto', mt: 6, p: 3, bgcolor: '#fafafa', borderRadius: 2, boxShadow: 3 }}>
       <Typography variant="h4" align="center" gutterBottom>
