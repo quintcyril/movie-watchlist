@@ -140,6 +140,21 @@ export default function ReviewScreen() {
 
               </Box>
             ))}
+
+            <TextField
+              fullWidth
+              size="small"
+              placeholder="Write a review..."
+              value={reviewInputs[movie.id] || ""}
+              onChange={(e) =>
+                setReviewInputs({
+                  ...reviewInputs,
+                  [movie.id]: e.target.value
+                })
+              }
+              sx={{ mt: 1 }}
+            />
+            
             <Button variant="contained" color="primary" sx={{ mt: 1 }}>
               Add Review {/* TODO: Implement add review for this movie */}
             </Button>
