@@ -3,7 +3,11 @@
     "id": 1,
     "title": "Inception",
     "genre": "Sci-Fi",
-    "watched": true
+    "watched": true,
+    "review":{
+      "rating": 5,
+      "comment":"good" 
+    }
   },
   {
     "id": 2,

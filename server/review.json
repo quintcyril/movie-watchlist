@@ -1,0 +1,16 @@
+[
+  {
+    "id": 1,
+    "movieId": 1,
+    "rating": 5,
+    "createdAt": "2026-03-21T03:24:15.984Z"
+  },
+  {
+    "id": 2,
+    "movieId": 1,
+    "author": "asdsad",
+    "rating": null,
+    "text": "asdsad",
+    "createdAt": "2026-03-21T03:30:19.000Z"
+  }
+]
