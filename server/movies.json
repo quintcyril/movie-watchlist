@@ -9,18 +9,27 @@
     "id": 2,
     "title": "The Dark Knight",
     "genre": "Action",
-    "watched": false
+    "watched": true
   },
   {
     "id": 3,
     "title": "Forrest Gump",
     "genre": "Drama",
-    "watched": false
+    "watched": true
   },
   {
     "id": 1773251325903,
     "title": "Avatar 2",
     "genre": "Action",
+    "watched": true,
+    "reviews": 
+        "rating" : 5,
+        "review": "Amazing visual effects!"
+      },
+  {
+    "id": 1773456567428,
+    "title": "watafak",
+    "genre": "Comedy",
     "watched": true
   }
 ]

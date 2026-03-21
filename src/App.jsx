@@ -33,6 +33,7 @@ function AppContent() {
           <Box sx={{ flexGrow: 1, p: 3 }}>
             <Routes>
               <Route path="/" element={<MovieWatchListMain />} />
+              <Route path='/register' element={<Navigate to="/register"/>}/>
               <Route path="/other" element={<MovieOtherScreen />} />
               <Route path="/reviews" element={<ReviewScreen />} />
               <Route path="*" element={<Navigate to="/" />} />
