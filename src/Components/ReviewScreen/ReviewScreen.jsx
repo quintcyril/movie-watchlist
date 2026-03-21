@@ -36,11 +36,29 @@ export default function ReviewScreen() {
   };
 
   // TODO: Implement edit/delete review functionality
+const handleEditReview = (movieId, reviewIndex) => {
+  setEditingMovieId(`${movieId}-${reviewIndex}`);
+  setEditedText(reviews[movieId][reviewIndex]);
+};
 
-  const handleDeleteReview = (movieId, index) => {
-  setReviews(prev => ({
+const handleSaveEdit = (movieId, reviewIndex) => {
+  if (!editedText.trim()) return;
+
+  setReviews((prev) => ({
     ...prev,
-    [movieId]: prev[movieId].filter((_, i) => i !== index)
+    [movieId]: prev[movieId].map((review, index) =>
+      index === reviewIndex ? editedText : review
+    )
+  }));
+
+  setEditingMovieId(null);
+  setEditedText('');
+};
+
+const handleDeleteReview = (movieId, reviewIndex) => {
+  setReviews((prev) => ({
+    ...prev,
+    [movieId]: prev[movieId].filter((_, index) => index !== reviewIndex)
   }));
 };
 
