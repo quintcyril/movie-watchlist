@@ -5,9 +5,15 @@ import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import ListItemText from '@mui/material/ListItemText';
 import Button from '@mui/material/Button';
+import TextField from '@mui/material/TextField';
+
 
 export default function ReviewScreen() {
   const [watchedMovies, setWatchedMovies] = useState([]);
+  const [reviews, setReviews] = useState({});
+  const [newReview, setNewReview] = useState({});
+  const [editingIndex, setEditingIndex] = useState({});
+  const [editedText, setEditedText] = useState('');
 
   useEffect(() => {
     // Retrieve watched movies from backend
@@ -17,6 +23,18 @@ export default function ReviewScreen() {
   }, []);
 
   // TODO: Implement add review functionality for watched movies
+
+  const handleAddReview = (movieId) => {
+    if (!newReview[movieId]) return;
+
+    setReviews(prev => ({
+      ...prev,
+      [movieId]: [...(prev[movieId] || []), newReview[movieId]]
+    }));
+
+    setNewReview(prev => ({ ...prev, [movieId]: '' }));
+  };
+
   // TODO: Implement edit/delete review functionality
 
   return (
