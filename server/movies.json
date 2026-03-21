@@ -3,7 +3,8 @@
     "id": 1,
     "title": "Inception",
     "genre": "Sci-Fi",
-    "watched": true
+    "watched": true,
+    "review": "Its not great"
   },
   {
     "id": 2,
@@ -21,6 +22,20 @@
     "id": 1773251325903,
     "title": "Avatar 2",
     "genre": "Action",
-    "watched": true
+    "watched": true,
+    "review": "Cash cow movie, not worth your money"
+  },
+  {
+    "id": 1774058500901,
+    "title": "Avengers",
+    "genre": "Action",
+    "watched": true,
+    "review": null
+  },
+  {
+    "id": 1774058532741,
+    "title": "Get out",
+    "genre": "Horror",
+    "watched": false
   }
 ]
