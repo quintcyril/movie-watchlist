@@ -3,7 +3,7 @@ const path = require('path');
 const fs = require('fs');
 const router = express.Router();
 
-const REVIEWS_FILE = path.join(__dirname, 'reviews.json');
+const REVIEWS_FILE = path.join(__dirname, 'review.json');
 
 router.get('/', (req, res) => {
   const reviews = JSON.parse(fs.readFileSync(REVIEWS_FILE));
@@ -58,4 +58,3 @@ router.delete('/:id', (req, res) => {
 });
 
 module.exports = router;
-

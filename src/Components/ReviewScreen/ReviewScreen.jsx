@@ -1,17 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
-import List from '@mui/material/List';
-import ListItem from '@mui/material/ListItem';
-import ListItemText from '@mui/material/ListItemText';
 import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
 import Rating from '@mui/material/Rating';
-import Divider from '@mui/material/Divider';
 import IconButton from '@mui/material/IconButton';
 import Stack from '@mui/material/Stack';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
+import './ReviewScreen.css';
 
 export default function ReviewScreen() {
   const [watchedMovies, setWatchedMovies] = useState([]);
@@ -80,60 +77,59 @@ export default function ReviewScreen() {
   };
 
   return (
-    <Box sx={{ maxWidth: 700, mx: 'auto', mt: 6, p: 3, bgcolor: '#fafafa', borderRadius: 2, boxShadow: 3 }}>
-      <Typography variant="h4" align="center" gutterBottom>
-        Reviews for Watched Movies
-      </Typography>
+    <div className="review-screen">
+      <div className="review-screen__halo" />
+      <Box className="review-panel">
+        <Typography variant="h4" className="review-title">
+          Movie Review Hub
+        </Typography>
+        <Typography className="review-subtitle">
+          Share your thoughts on the films you already watched.
+        </Typography>
 
-      {watchedMovies.length === 0 && (
-        <Typography align="center" color="text.secondary">No watched movies yet.</Typography>
-      )}
+        {watchedMovies.length === 0 && (
+          <Typography className="review-empty">No watched movies yet.</Typography>
+        )}
 
-      <List disablePadding>
-        {watchedMovies.map(movie => (
-          <React.Fragment key={movie.id}>
-            <ListItem sx={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', py: 2 }}>
-              <ListItemText
-                primary={<Typography variant="h6">{movie.title}</Typography>}
-                secondary={movie.genre}
-              />
+        <div className="review-movie-grid">
+          {watchedMovies.map(movie => (
+            <article key={movie.id} className="review-movie-card">
+              <header className="review-movie-header">
+                <Typography variant="h6" className="review-movie-title">{movie.title}</Typography>
+                <span className="review-genre-pill">{movie.genre}</span>
+              </header>
 
-              {/* Existing reviews */}
-              {(reviews[movie.id] || []).map(review =>
-                editingReview?.id === review.id ? (
-                  // Inline edit form
-                  <Box key={review.id} sx={{ width: '100%', mt: 1, p: 1.5, bgcolor: '#e3f2fd', borderRadius: 1 }}>
-                    <TextField
-                      fullWidth
-                      multiline
-                      minRows={2}
-                      label="Edit Review"
-                      value={editingReview.reviewText}
-                      onChange={e => setEditingReview(prev => ({ ...prev, reviewText: e.target.value }))}
-                      size="small"
-                    />
-                    <Stack direction="row" alignItems="center" spacing={1} sx={{ mt: 1 }}>
-                      <Typography variant="body2">Rating:</Typography>
-                      <Rating
-                        value={editingReview.rating || 0}
-                        onChange={(_, val) => setEditingReview(prev => ({ ...prev, rating: val }))}
+              <div className="review-list">
+                {(reviews[movie.id] || []).map(review =>
+                  editingReview?.id === review.id ? (
+                    <Box key={review.id} className="review-item review-item--editing">
+                      <TextField
+                        fullWidth
+                        multiline
+                        minRows={2}
+                        label="Edit review"
+                        value={editingReview.reviewText}
+                        onChange={e => setEditingReview(prev => ({ ...prev, reviewText: e.target.value }))}
+                        size="small"
                       />
-                    </Stack>
-                    <Stack direction="row" spacing={1} sx={{ mt: 1 }}>
-                      <Button size="small" variant="contained" onClick={handleEditSave}>Save</Button>
-                      <Button size="small" variant="outlined" onClick={() => setEditingReview(null)}>Cancel</Button>
-                    </Stack>
-                  </Box>
-                ) : (
-                  // Read-only review card
-                  <Box key={review.id} sx={{ width: '100%', mt: 1, p: 1.5, bgcolor: '#f0f0f0', borderRadius: 1 }}>
-                    <Stack direction="row" justifyContent="space-between" alignItems="flex-start">
-                      <Box>
+                      <Stack direction="row" alignItems="center" spacing={1} sx={{ mt: 1 }}>
+                        <Typography variant="body2">Rating:</Typography>
+                        <Rating
+                          value={editingReview.rating || 0}
+                          onChange={(_, val) => setEditingReview(prev => ({ ...prev, rating: val }))}
+                        />
+                      </Stack>
+                      <Stack direction="row" spacing={1} sx={{ mt: 1 }}>
+                        <Button size="small" variant="contained" onClick={handleEditSave}>Save</Button>
+                        <Button size="small" variant="outlined" onClick={() => setEditingReview(null)}>Cancel</Button>
+                      </Stack>
+                    </Box>
+                  ) : (
+                    <Box key={review.id} className="review-item">
+                      <div className="review-item__content">
                         <Typography variant="body2">{review.reviewText}</Typography>
-                        {review.rating && (
-                          <Rating value={review.rating} readOnly size="small" sx={{ mt: 0.5 }} />
-                        )}
-                      </Box>
+                        {review.rating && <Rating value={review.rating} readOnly size="small" sx={{ mt: 0.5 }} />}
+                      </div>
                       <Stack direction="row">
                         <IconButton
                           size="small"
@@ -149,18 +145,17 @@ export default function ReviewScreen() {
                           <DeleteIcon fontSize="small" />
                         </IconButton>
                       </Stack>
-                    </Stack>
-                  </Box>
-                )
-              )}
+                    </Box>
+                  )
+                )}
+              </div>
 
-              {/* Add review form */}
-              <Box sx={{ width: '100%', mt: 2 }}>
+              <Box className="review-form">
                 <TextField
                   fullWidth
                   multiline
                   minRows={2}
-                  label="Write a review..."
+                  label="Write a review"
                   value={forms[movie.id]?.reviewText || ''}
                   onChange={e => handleFormChange(movie.id, 'reviewText', e.target.value)}
                   size="small"
@@ -174,7 +169,7 @@ export default function ReviewScreen() {
                 </Stack>
                 <Button
                   variant="contained"
-                  color="primary"
+                  className="review-submit-btn"
                   sx={{ mt: 1 }}
                   onClick={() => handleAddReview(movie.id)}
                   disabled={!forms[movie.id]?.reviewText?.trim()}
@@ -182,11 +177,10 @@ export default function ReviewScreen() {
                   Add Review
                 </Button>
               </Box>
-            </ListItem>
-            <Divider />
-          </React.Fragment>
-        ))}
-      </List>
-    </Box>
+            </article>
+          ))}
+        </div>
+      </Box>
+    </div>
   );
 }
