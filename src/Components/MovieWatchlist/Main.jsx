@@ -44,7 +44,7 @@ export default function MovieWatchListMain() {
     const handleAddMovie = async () => {
         if (title.trim()) {
             // Create a new movie object
-            const newMovie = { id: Date.now(), title, genre, watched: false };
+            const newMovie = { id: Date.now(), title, genre, watched: false, reviews: [] };
             // Send POST request to backend
             const res = await fetch('http://localhost:3001/movies', {
                 method: 'POST',
