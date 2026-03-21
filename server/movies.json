@@ -9,7 +9,7 @@
     "id": 2,
     "title": "The Dark Knight",
     "genre": "Action",
-    "watched": false
+    "watched": true
   },
   {
     "id": 3,
