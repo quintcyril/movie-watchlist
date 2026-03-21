@@ -4,7 +4,12 @@
     "title": "Inception",
     "genre": "Sci-Fi",
     "watched": true,
-    "reviews": []
+    "reviews": [
+      {
+        "id": 1774061478702,
+        "text": "This move is the best!"
+      }
+    ]
   },
   {
     "id": 2,
@@ -25,6 +30,35 @@
     "title": "Avatar 2",
     "genre": "Action",
     "watched": true,
-    "reviews": []
+    "reviews": [
+      {
+        "id": 1774061321407,
+        "text": "This movie is great!"
+      },
+      {
+        "id": 1774061336719,
+        "text": "Love it!"
+      }
+    ]
+  },
+  {
+    "id": 1774061522694,
+    "title": "Avatar 3: Fire and Ash",
+    "genre": "Action",
+    "watched": true,
+    "reviews": [
+      {
+        "id": 1774061536350,
+        "text": "Wow! Amazing!"
+      },
+      {
+        "id": 1774061542389,
+        "text": "Spectacular!"
+      },
+      {
+        "id": 1774061582150,
+        "text": "Enjoyed this with my family in the cinemas!"
+      }
+    ]
   }
 ]
