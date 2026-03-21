@@ -45,6 +45,22 @@ export default function ReviewScreen() {
   };
 
   // TODO: Implement edit/delete review functionality
+  const handleDeleteReview = (movieId, reviewId) => {
+    const movie = watchedMovies.find(m => m.id === movieId);
+    const updatedReviews = movie.reviews.filter(r => r.id !== reviewId);
+
+    fetch(`http://localhost:3001/movies/${movieId}`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ reviews: updatedReviews })
+    }).then(() => {
+      setWatchedMovies(prev =>
+        prev.map(m =>
+          m.id === movieId ? { ...m, reviews: updatedReviews } : m
+        )
+      );
+    });
+  };
 
   return (
     <Box sx={{ maxWidth: 600, mx: 'auto', mt: 6, p: 3, bgcolor: '#fafafa', borderRadius: 2, boxShadow: 3 }}>
