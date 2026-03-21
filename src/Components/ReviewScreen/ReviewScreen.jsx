@@ -7,82 +7,198 @@ import ListItemText from '@mui/material/ListItemText';
 import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
 
-export default function ReviewScreen() {
+
+function useReviews() {
   const [watchedMovies, setWatchedMovies] = useState([]);
-  const [editingId, setEditingId] = useState(null);
+  const [reviewInputs, setReviewInputs] = useState({});
+  const [editingReview, setEditingReview] = useState(null);
   const [editText, setEditText] = useState('');
-  const [reviewText, setReviewText] = useState("");
- 
 
   useEffect(() => {
-    // Retrieve watched movies from backend
-    fetch('http://localhost:3001/movies')
-      .then(res => res.json())
-      .then(data => setWatchedMovies(data.filter(movie => movie.watched)));
+    Promise.all([
+      fetch('http://localhost:3001/movies').then(res => res.json()),
+      fetch('http://localhost:3001/reviews').then(res => res.json()),
+    ]).then(([movies, reviews]) => {
+      const watched = movies
+        .filter(movie => movie.watched)
+        .map(movie => ({
+          ...movie,
+          reviews: reviews.filter(r => r.movieId === movie.id),
+        }));
+      setWatchedMovies(watched);
+    });
   }, []);
 
-  //TODO: Implement add review functionality for watched movies
-  const handleAddReview = (id) => {
-    const review = reviewText[id];
-    if (!review || review.trim() === '') return;
+  const updateMovieReviews = (movieId, updatedReviews) => {
+  const movie = watchedMovies.find(m => m.id === movieId); 
+  const movieTitle = movie ? movie.title : '';              
 
-    
-    fetch('http://localhost:3001/reviews', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ movieId: id, reviewText: review })
+  return fetch(`http://localhost:3001/reviews?movieId=${movieId}`)
+    .then(res => res.json())
+    .then(existing => {
+      const deletePromises = existing.map(r =>
+        fetch(`http://localhost:3001/reviews/${r.id}`, { method: 'DELETE' })
+      );
+      return Promise.all(deletePromises);
     })
-      .then(res => res.json())
-      .then(data => {
-        
-        setWatchedMovies(
-          watchedMovies.map((movie) => 
-            movie.id === id ? { ...movie, review } : movie
-          )
-        );
-        
-        setReviewText({ ...reviewText, [id]: '' });
-      })
-      .catch(err => console.error('Error adding review:', err));
+    .then(() => {
+      const addPromises = updatedReviews.map(r =>
+        fetch('http://localhost:3001/reviews', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ ...r, movieId: Number(movieId), movieTitle }), 
+        })
+      );
+      return Promise.all(addPromises);
+    })
+    .then(() => {
+      setWatchedMovies(prev =>
+        prev.map(m => (m.id === movieId ? { ...m, reviews: updatedReviews } : m))
+      );
+    });
+};
+
+
+  const handleAddReview = (movieId) => {
+    const text = reviewInputs[movieId];
+    if (!text) return;
+
+    const movie = watchedMovies.find(m => m.id === movieId);
+    const updatedReviews = movie.reviews
+      ? [...movie.reviews, { id: Date.now(), text }]
+      : [{ id: Date.now(), text }];
+
+    updateMovieReviews(movieId, updatedReviews).then(() => {
+      setReviewInputs(prev => ({ ...prev, [movieId]: '' }));
+    });
   };
 
-  // TODO: Implement edit/delete review functionality
-  
-  const handleEditReview = (id) => {
-    if (!editText || editText.trim() === '') return;
-
-    fetch(`http://localhost:3001/reviews/${id}`, {
-      method: 'PATCH',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ reviewText: editText })
-    })
-      .then(res => res.json())
-      .then(data => {
-        setWatchedMovies(
-          watchedMovies.map((movie) =>
-            movie.id === id ? { ...movie, review: editText } : movie
-          )
-        );
-        setEditingId(null);
-        setEditText('');
-      })
-      .catch(err => console.error('Error editing review:', err));
+  const handleDeleteReview = (movieId, reviewId) => {
+    const movie = watchedMovies.find(m => m.id === movieId);
+    const updatedReviews = movie.reviews.filter(r => r.id !== reviewId);
+    updateMovieReviews(movieId, updatedReviews);
   };
 
-  const handleDeleteReview = (id) => {
-    fetch(`http://localhost:3001/reviews/${id}`, {
-      method: 'DELETE'
-    })
-      .then(res => res.json())
-      .then(data => {
-        setWatchedMovies(
-          watchedMovies.map((movie) =>
-            movie.id === id ? { ...movie, review: null } : movie
-          )
-        );
-      })
-      .catch(err => console.error('Error deleting review:', err));
+  const handleEditReview = (review) => {
+    setEditingReview(review.id);
+    setEditText(review.text);
   };
+
+  const handleSaveEdit = (movieId) => {
+    const movie = watchedMovies.find(m => m.id === movieId);
+    const updatedReviews = movie.reviews.map(r =>
+      r.id === editingReview ? { ...r, text: editText } : r
+    );
+    updateMovieReviews(movieId, updatedReviews).then(() => {
+      setEditingReview(null);
+      setEditText('');
+    });
+  };
+
+  return {
+    watchedMovies,
+    reviewInputs,
+    setReviewInputs,
+    editingReview,
+    editText,
+    setEditText,
+    handleAddReview,
+    handleDeleteReview,
+    handleEditReview,
+    handleSaveEdit,
+  };
+}
+
+
+function ReviewRow({ review, movieId, editingReview, editText, setEditText, onSaveEdit, onEditReview, onDeleteReview }) {
+  const isEditing = editingReview === review.id;
+
+  return (
+    <Box sx={{ width: '100%', mb: 1 }}>
+      {isEditing ? (
+        <>
+          <TextField
+            fullWidth
+            size="small"
+            value={editText}
+            onChange={(e) => setEditText(e.target.value)}
+          />
+          <Button
+            variant="contained"
+            size="small"
+            sx={{ mt: 1, mr: 1 }}
+            onClick={() => onSaveEdit(movieId)}
+          >
+            Save
+          </Button>
+        </>
+      ) : (
+        <>
+          <Typography variant="body2">{review.text}</Typography>
+          <Button size="small" onClick={() => onEditReview(review)}>
+            Edit
+          </Button>
+          <Button size="small" color="error" onClick={() => onDeleteReview(movieId, review.id)}>
+            Delete
+          </Button>
+        </>
+      )}
+    </Box>
+  );
+}
+
+
+function AddReviewForm({ movieId, value, onChange, onAdd }) {
+  return (
+    <>
+      <TextField
+        fullWidth
+        size="small"
+        placeholder="Write a review..."
+        value={value}
+        onChange={(e) => onChange(movieId, e.target.value)}
+        sx={{ mt: 1 }}
+      />
+      <Button variant="contained" color="primary" sx={{ mt: 1 }} onClick={() => onAdd(movieId)}>
+        Add Review
+      </Button>
+    </>
+  );
+}
+
+
+function MovieCard({ movie, reviewInputs, setReviewInputs, editingReview, editText, setEditText, handleAddReview, handleDeleteReview, handleEditReview, handleSaveEdit }) {
+  return (
+    <ListItem sx={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', mb: 3 }}>
+      <ListItemText primary={movie.title} secondary={movie.genre} />
+
+      {movie.reviews && movie.reviews.map(review => (
+        <ReviewRow
+          key={review.id}
+          review={review}
+          movieId={movie.id}
+          editingReview={editingReview}
+          editText={editText}
+          setEditText={setEditText}
+          onSaveEdit={handleSaveEdit}
+          onEditReview={handleEditReview}
+          onDeleteReview={handleDeleteReview}
+        />
+      ))}
+
+      <AddReviewForm
+        movieId={movie.id}
+        value={reviewInputs[movie.id] || ''}
+        onChange={(id, val) => setReviewInputs(prev => ({ ...prev, [id]: val }))}
+        onAdd={handleAddReview}
+      />
+    </ListItem>
+  );
+}
+
+
+export default function ReviewScreen() {
+  const reviews = useReviews();
 
   return (
     <Box sx={{ maxWidth: 600, mx: 'auto', mt: 6, p: 3, bgcolor: '#fafafa', borderRadius: 2, boxShadow: 3 }}>
@@ -90,45 +206,8 @@ export default function ReviewScreen() {
         Reviews for Watched Movies
       </Typography>
       <List>
-        {watchedMovies.map(movie => (
-          <ListItem key={movie.id} sx={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
-            <ListItemText primary={movie.title} secondary={movie.genre} />
-            {/* TODO: Add review form and display reviews for this movie */}
-
-            {movie.review && editingId !== movie.id && (
-              <Box sx={{ width: '100%', mt: 1, p: 1, bgcolor: '#f5f5f5', borderRadius: 1 }}>
-                <Typography variant="body2" sx={{ fontWeight: 'bold' }}>Your Review:</Typography>
-                <Typography variant="body2">{movie.review}</Typography>
-                <Box sx={{ mt: 1, display: 'flex', gap: 1 }}>
-                  <Button variant="outlined" size="small" onClick={() => { setEditingId(movie.id); setEditText(movie.review); }}>Edit</Button>
-                  <Button variant="outlined" color="error" size="small" onClick={() => handleDeleteReview(movie.id)}>Delete</Button>
-                </Box>
-              </Box>
-            )}
-
-            {/* Edit review form */}
-            {editingId === movie.id && (
-              <Box sx={{ width: '100%', mt: 1 }}>
-                <TextField fullWidth multiline rows={3} value={editText} onChange={(e) => setEditText(e.target.value)} placeholder="Editing review..." variant="outlined" size="small" />
-                <Box sx={{ mt: 1, display: 'flex', gap: 1 }}>
-                  <Button variant="contained" color="primary" size="small" onClick={() => handleEditReview(movie.id)}>Save</Button>
-                  <Button variant="outlined" size="small" onClick={() => { setEditingId(null); setEditText(''); }}>Cancel</Button>
-                </Box>
-              </Box>
-            )}
-
-            {/* Add review form */}
-            {!movie.review && editingId !== movie.id && (
-              <Box sx={{ width: '100%', mt: 1 }}>
-                <TextField fullWidth multiline rows={2} value={reviewText[movie.id] || ''} onChange={(e) => setReviewText({ ...reviewText, [movie.id]: e.target.value })} placeholder="Add your review..." variant="outlined" size="small" />
-                <Button variant="contained" color="primary" sx={{ mt: 1 }} 
-                onClick={() => handleAddReview(movie.id)}>
-                  Add Review {/* TODO: Implement add review for this movie */}
-                  </Button>
-              </Box>
-            )}
-
-          </ListItem>
+        {reviews.watchedMovies.map(movie => (
+          <MovieCard key={movie.id} movie={movie} {...reviews} />
         ))}
       </List>
     </Box>
