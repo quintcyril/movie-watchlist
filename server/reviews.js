@@ -1,9 +1,17 @@
 const express = require('express');
+const fs = require('fs');        
+const path = require('path');    
 const router = express.Router();
+
+const REVIEWS_FILE = path.join(__dirname, 'reviews.json');  
+const readReviews = () => JSON.parse(fs.readFileSync(REVIEWS_FILE, 'utf-8'));  
+const writeReviews = (data) => fs.writeFileSync(REVIEWS_FILE, JSON.stringify(data, null, 2));  
+
 
 // Example: Get all reviews
 router.get('/', (req, res) => {
-  res.json([{ id: 1, movieId: 1, review: 'Great movie!' }]);
+  const reviews = readReviews();
+  res.json({ success: true, data: reviews });
 });
 
 // Example: Add review
