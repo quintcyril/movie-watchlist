@@ -67,6 +67,28 @@ export default function ReviewScreen() {
     setEditText(review.text);
   };
 
+   const handleSaveEdit = (movieId) => {
+    const movie = watchedMovies.find(m => m.id === movieId);
+
+    const updatedReviews = movie.reviews.map(r =>
+      r.id === editingReview ? { ...r, text: editText } : r
+    );
+
+    fetch(`http://localhost:3001/movies/${movieId}`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ reviews: updatedReviews })
+    }).then(() => {
+      setWatchedMovies(prev =>
+        prev.map(m =>
+          m.id === movieId ? { ...m, reviews: updatedReviews } : m
+        )
+      );
+      setEditingReview(null);
+      setEditText("");
+    });
+  };
+
   return (
     <Box sx={{ maxWidth: 600, mx: 'auto', mt: 6, p: 3, bgcolor: '#fafafa', borderRadius: 2, boxShadow: 3 }}>
       <Typography variant="h4" align="center" gutterBottom>
