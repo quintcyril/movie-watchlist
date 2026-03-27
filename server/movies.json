@@ -1,0 +1,26 @@
+[
+  {
+    "id": 1,
+    "title": "Inception",
+    "genre": "Sci-Fi",
+    "watched": false
+  },
+  {
+    "id": 2,
+    "title": "The Dark Knight",
+    "genre": "Action",
+    "watched": false
+  },
+  {
+    "id": 1773251325903,
+    "title": "Avatar 2",
+    "genre": "Action",
+    "watched": false
+  },
+  {
+    "id": 1774597757485,
+    "title": "Godzilla",
+    "genre": "Action",
+    "watched": true
+  }
+]
