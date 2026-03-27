@@ -8,10 +8,10 @@ const MovieCard = ({ title, genre, watched, onToggleWatched, onRemove, onUpdate 
     return (
         <Card sx={{ minWidth: 250, mb: 2, boxShadow: 3 }}>
             <CardContent>
-                <Typography variant="h6" component="div">
+                <Typography variant="h6" component="div" sx={{ color: '#000' }}>
                     {title}
                 </Typography>
-                <Typography color="text.secondary" gutterBottom>
+                <Typography color="text.secondary" gutterBottom sx={{ color: '#444' }}>
                     {genre}
                 </Typography>
                 <Button

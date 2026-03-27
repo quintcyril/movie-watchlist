@@ -25,7 +25,7 @@ function Sidebar() {
         [`& .MuiDrawer-paper`]: {
           width: drawerWidth,
           boxSizing: 'border-box',
-          top: 64 // height of AppBar
+          top: 64 
         },
       }}
     >

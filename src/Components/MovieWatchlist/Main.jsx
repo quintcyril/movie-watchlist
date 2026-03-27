@@ -138,12 +138,12 @@ export default function MovieWatchListMain() {
     return (
         <Box sx={{ width: '100%', mx: 'auto', mt: 6, p: 3, bgcolor: '#fafafa', borderRadius: 2, boxShadow: 3 }}>
             {/* Title of the page */}
-            <Typography variant="h4" align="center" gutterBottom>
+            <Typography variant="h4" align="center" gutterBottom sx={{ color: '#000' }}>
                 Movie Watchlist
             </Typography>
             {/* Display total count of movies */}
             <Box sx={{ mb: 3 }}>
-                <Typography variant="h6">Total Watched: {totalCount}</Typography>
+                <Typography variant="h6" sx={{ color: '#000' }}>Total Watched: {totalCount}</Typography>
             </Box>
             {/* Input fields for adding a new movie */}
             <Box sx={{ display: 'flex', gap: 2, mb: 4 }}>
