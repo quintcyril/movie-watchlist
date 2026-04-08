@@ -12,16 +12,8 @@ export default function ReviewScreen() {
   const [reviewInputs, setReviewInputs] = useState({});
   const [editingMovieId, setEditingMovieId] = useState(null);
 
-<<<<<<< HEAD
   useEffect(() => {
     fetch('http://localhost:3001/movies')
-=======
-  const [reviews, setReviews] = useState({});
-  const [newReview, setNewReview] = useState("");
-  const [activeMovieId, setActiveMovieId] = useState(null);
-
-  useEffect(() => { fetch('http://localhost:3001/movies')
->>>>>>> 3a7f7cd6c5e31a732c4bde45aceede3321fd54bd
       .then(res => res.json())
       .then(data => {
         const watched = data.filter(movie => movie.watched);
@@ -35,7 +27,6 @@ export default function ReviewScreen() {
       });
   }, []);
 
-<<<<<<< HEAD
   const handleInputChange = (movieId, value) => {
     setReviewInputs(prev => ({
       ...prev,
@@ -117,44 +108,6 @@ export default function ReviewScreen() {
         boxShadow: 3
       }}
     >
-=======
-  const addReview = (movieID) => {
-    if (!newReview.trim()) return;
-
-    setReviews(prev => ({
-      ...prev,
-      [movieID]: [...(prev[movieID] || []), newReview]
-    }));
-
-    setNewReview("");
-    setActiveMovieId(null);
-  };
-
-  const editReview = (movieID, index) => {
-    const updatedReviewText = prompt("Edit your movie review:");
-    if (!updatedReviewText) return;
-
-    const updatedReviews = [...(reviews[movieID] || [])];
-    updatedReviews[index] = updatedReviewText;
-
-    setReviews(prev => ({
-      ...prev,
-      [movieID]: updatedReviews
-    }));
-  };
-
-  const deleteReview = (movieID, index) => {
-    const updatedReviews = reviews[movieID].filter((_, i) => i !== index);
-
-    setReviews(prev => ({
-      ...prev,
-      [movieID]: updatedReviews
-    }));
-  };
-
-  return (
-    <Box sx={{ maxWidth: 600, mx: 'auto', mt: 6, p: 3, bgcolor: '#45ADED', borderRadius: 2, boxShadow: 3 }}>
->>>>>>> 3a7f7cd6c5e31a732c4bde45aceede3321fd54bd
       <Typography variant="h4" align="center" gutterBottom>
         Reviews for Watched Movies
       </Typography>
@@ -163,7 +116,6 @@ export default function ReviewScreen() {
         {watchedMovies.map(movie => (
           <ListItem
             key={movie.id}
-<<<<<<< HEAD
             sx={{
               display: 'flex',
               flexDirection: 'column',
@@ -221,53 +173,6 @@ export default function ReviewScreen() {
                 </Button>
               )}
             </Box>
-=======
-            sx={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}
-          >
-            <ListItemText primary={movie.title} secondary={movie.genre} />
-            {reviews[movie.id]?.map((review, index) => (
-              <Box key={index} sx={{ width: '100%', mt: 1 }}>
-                <Typography variant="body2">{review}</Typography>
-
-                <Button size="small" onClick={() => editReview(movie.id, index)}>
-                  Edit
-                </Button>
-
-                <Button size="small" color="error" onClick={() => deleteReview(movie.id, index)}>
-                  Delete
-                </Button>
-              </Box>
-            ))}
-
-            {activeMovieId === movie.id ? (
-              <Box sx={{ width: '100%', mt: 1 }}>
-                <TextField
-                  fullWidth
-                  size="small"
-                  label="Write a review"
-                  value={newReview}
-                  onChange={(e) => setNewReview(e.target.value)}
-                />
-
-                <Button
-                  variant="contained"
-                  sx={{ mt: 1 }}
-                  onClick={() => addReview(movie.id)}
-                >
-                  Submit Review
-                </Button>
-              </Box>
-            ) : (
-              <Button
-                variant="contained"
-                sx={{ mt: 1 }}
-                onClick={() => setActiveMovieId(movie.id)}
-              >
-                Add Review
-              </Button>
-            )}
-
->>>>>>> 3a7f7cd6c5e31a732c4bde45aceede3321fd54bd
           </ListItem>
         ))}
       </List>
