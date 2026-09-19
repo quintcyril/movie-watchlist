@@ -11,7 +11,8 @@ const drawerWidth = 200;
 
 const navItems = [
   { label: 'Watchlist', path: '/' },
-  { label: 'Reviews', path: '/reviews' }
+  { label: 'Reviews', path: '/reviews' },
+  { label: 'MVC Sample (.NET)', path: '/mvc-sample' }
 ];
 
 function Sidebar() {

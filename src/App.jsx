@@ -11,6 +11,7 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import Box from '@mui/material/Box';
 import Sidebar from './Common/Sidebar';
 import ReviewScreen from './Components/ReviewScreen/ReviewScreen';
+import MvcSample from './Components/MvcSample/MvcSample';
 
 function MovieOtherScreen() {
   return (
@@ -36,6 +37,7 @@ function AppContent() {
               <Route pat="/register" element={<Navigate to="/login" />} />
               <Route path="/other" element={<MovieOtherScreen />} />
               <Route path="/reviews" element={<ReviewScreen />} />
+              <Route path="/mvc-sample" element={<MvcSample />} />
               <Route path="*" element={<Navigate to="/" />} />
             </Routes>
           </Box>
