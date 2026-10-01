@@ -1,6 +1,4 @@
 import { useContext } from 'react';
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
 import './App.css'
 import MovieWatchListMain from './Components/MovieWatchlist/Main';
 import { AuthProvider, AuthContext } from './Common/AuthContext';
@@ -33,7 +31,8 @@ function AppContent() {
           <Sidebar />
           <Box sx={{ flexGrow: 1, p: 3 }}>
             <Routes>
-              <Route path="/" element={<MovieWatchListMain />} />
+              <Route path="/" element={<Navigate to="/mvc-sample" replace />} />
+              <Route path="/watchlist" element={<MovieWatchListMain />} />
               <Route pat="/register" element={<Navigate to="/login" />} />
               <Route path="/other" element={<MovieOtherScreen />} />
               <Route path="/reviews" element={<ReviewScreen />} />

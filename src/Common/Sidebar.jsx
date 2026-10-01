@@ -10,7 +10,7 @@ import { Link, useLocation } from 'react-router-dom';
 const drawerWidth = 200;
 
 const navItems = [
-  { label: 'Watchlist', path: '/' },
+  { label: 'Watchlist', path: '/watchlist' },
   { label: 'Reviews', path: '/reviews' },
   { label: 'MVC Sample (.NET)', path: '/mvc-sample' }
 ];
