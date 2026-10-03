@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Stack from '@mui/material/Stack';
@@ -21,29 +21,72 @@ import Typography from '@mui/material/Typography';
 import { movieApi } from '../../Common/api';
 
 const emptyForm = { title: '', genre: '', releaseYear: new Date().getFullYear() };
-const previewMovies = [
-  { id: 1, title: 'The Matrix', genre: 'Sci-Fi', releaseYear: 1999, watched: false },
-  { id: 2, title: 'Finding Nemo', genre: 'Animation', releaseYear: 2003, watched: true },
-];
 
 function MvcSample() {
   const [form, setForm] = useState(emptyForm);
   const [error, setError] = useState('');
   const [createdMovie, setCreatedMovie] = useState(null);
   const [saving, setSaving] = useState(false);
-  // TODO (students): Replace preview data with database movies and add a state setter.
-  const [movies, setMovies] = useState(previewMovies);
+  const [movies, setMovies] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [editingMovie, setEditingMovie] = useState(null);
   const [deletingMovie, setDeletingMovie] = useState(null);
   const [crudNotice, setCrudNotice] = useState('');
-  
-  
+
+  const handleLoadMovies = async () => {
+    setLoading(true);
+    setCrudNotice('');
+    try {
+      const movies = await movieApi.getAll()
+      setMovies(movies)
+      setCrudNotice('Movies load successful')
+    } catch (err) {
+      setCrudNotice(`Could not load movies: ${err.message}`);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
     handleLoadMovies();
-  }, [createdMovie]);
+  }, []);
 
+  const handleUpdateMovie = async (event) => {
+    event.preventDefault();
+    setCrudNotice('');
+    try {
+      // The backend replaces all four fields, so send the complete movie.
+      const updated = await movieApi.update(editingMovie.id, {
+        title: editingMovie.title.trim(),
+        genre: (editingMovie.genre ?? '').trim(),
+        releaseYear: Number(editingMovie.releaseYear),
+        watched: editingMovie.watched,
+      });
+      setMovies(movies.map((m) => (m.id === updated.id ? updated : m)));
+      setEditingMovie(null);
+    } catch (err) {
+      setCrudNotice(`Update failed: ${err.message}`);
+    }
+  };
 
-    const handleSubmit = async (event) => {
+  const handleDeleteMovie = async () => {
+    setCrudNotice('');
+    try {
+      await movieApi.remove(deletingMovie.id); // 204 No Content: request() returns null, no JSON parsing
+      setMovies(movies.filter((m) => m.id !== deletingMovie.id));
+    } catch (err) {
+      setCrudNotice(`Delete failed: ${err.message}`);
+    }
+    setDeletingMovie(null);
+  };
+
+  const handleEditChange = (field) => (event) =>
+    setEditingMovie({ ...editingMovie, [field]: event.target.value });
+
+  const handleChange = (field) => (event) =>
+    setForm({ ...form, [field]: event.target.value });
+
+  const handleSubmit = async (event) => {
     event.preventDefault();
     setError('');
     setCreatedMovie(null);
@@ -57,47 +100,13 @@ function MvcSample() {
       });
       setCreatedMovie(created);
       setForm(emptyForm);
-      // TODO (students): Refresh the database list after a successful create.
+      setMovies((list) => [...list, created]);
     } catch (err) {
       setError(err.message);
     } finally {
       setSaving(false);
     }
   };
-
-  const handleLoadMovies = async (event) => {
-    try {
-      const movies = await movieApi.getAll();
-      setMovies(movies);
-      setCrudNotice('Movies loaded successfully.');
-
-    } catch (err) {
-      setError(err.message);
-    } finally {
-      setSaving(false);
-    }
-  };
-
-  const handleUpdateMovie = (event) => {
-    event.preventDefault();
-    // TODO (students): Send all four fields with a numeric releaseYear; sync the list after success.
-    setCrudNotice('Update is not connected. No changes were saved.');
-    setEditingMovie(null);
-  };
-
-  const handleDeleteMovie = () => {
-    // TODO (students): Delete by ID, handle 204 without JSON parsing, then sync the list.
-    setCrudNotice('Delete is not connected. No movie was deleted.');
-    setDeletingMovie(null);
-  };
-
-  const handleEditChange = (field) => (event) =>
-    setEditingMovie({ ...editingMovie, [field]: event.target.value });
-
-  const handleChange = (field) => (event) =>
-    setForm({ ...form, [field]: event.target.value });
-
-
 
   return (
     <Box>
@@ -124,10 +133,10 @@ function MvcSample() {
       <Box sx={{ borderTop: 1, borderColor: 'divider', pt: 3 }}>
         <Stack direction="row" spacing={2} alignItems="center" sx={{ mb: 2 }}>
           <Typography component="h3" variant="h6" sx={{ flex: 1 }}>Movie List</Typography>
-          <Chip label="Preview data" size="small" variant="outlined" />
-          <Button onClick={handleLoadMovies}>Refresh</Button>
+          <Chip label={`${movies.length} movies`} size="small" variant="outlined" />
+          <Button onClick={handleLoadMovies} disabled={loading}>{loading ? 'Loading...' : 'Refresh'}</Button>
         </Stack>
-        {crudNotice && <Alert severity="warning" sx={{ mb: 2 }} onClose={() => setCrudNotice('')}>{crudNotice}</Alert>}
+        {crudNotice && <Alert severity="error" sx={{ mb: 2 }} onClose={() => setCrudNotice('')}>{crudNotice}</Alert>}
         <TableContainer>
           <Table size="small" aria-label="Movie list" sx={{ minWidth: 620 }}>
             <TableHead>
@@ -142,7 +151,7 @@ function MvcSample() {
             </TableHead>
             <TableBody>
               {movies.length === 0 && (
-                <TableRow><TableCell colSpan={6} align="center" sx={{ py: 4 }}>No movies found.</TableCell></TableRow>
+                <TableRow><TableCell colSpan={6} align="center" sx={{ py: 4 }}>{loading ? 'Loading movies...' : 'No movies found.'}</TableCell></TableRow>
               )}
               {movies.map((movie) => (
                 <TableRow key={movie.id}>
@@ -169,7 +178,7 @@ function MvcSample() {
             {editingMovie && (
               <Stack spacing={2} sx={{ pt: 1 }}>
                 <TextField label="Title" required autoFocus inputProps={{ maxLength: 150 }} value={editingMovie.title} onChange={handleEditChange('title')} />
-                <TextField label="Genre" inputProps={{ maxLength: 50 }} value={editingMovie.genre} onChange={handleEditChange('genre')} />
+                <TextField label="Genre" inputProps={{ maxLength: 50 }} value={editingMovie.genre ?? ''} onChange={handleEditChange('genre')} />
                 <TextField label="Release year" type="number" required inputProps={{ min: 1888, max: 2200 }} value={editingMovie.releaseYear} onChange={handleEditChange('releaseYear')} />
                 <FormControlLabel label="Watched" control={<Checkbox checked={editingMovie.watched} onChange={(event) => setEditingMovie({ ...editingMovie, watched: event.target.checked })} />} />
               </Stack>
