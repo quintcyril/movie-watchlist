@@ -36,14 +36,14 @@ function MvcSample() {
   const [editingMovie, setEditingMovie] = useState(null);
   const [deletingMovie, setDeletingMovie] = useState(null);
   const [crudNotice, setCrudNotice] = useState('');
-  
-  
+
+
   useEffect(() => {
     handleLoadMovies();
   }, [createdMovie]);
 
 
-    const handleSubmit = async (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
     setError('');
     setCreatedMovie(null);
@@ -80,9 +80,20 @@ function MvcSample() {
 
   const handleUpdateMovie = (event) => {
     event.preventDefault();
-    // TODO (students): Send all four fields with a numeric releaseYear; sync the list after success.
-    setCrudNotice('Update is not connected. No changes were saved.');
-    setEditingMovie(null);
+    try {
+      await movieApi.update(editingMovie, {
+      title: editingMovie.title.trim(),
+      genre: editingMovie.title.trim(),
+      releaseYear: Number(editingMovie.releaseYear),
+      watched: editingMovie.watched,
+      });
+      await handleLoadMovies; 
+
+      setCrudNotice('Update is not connected. No changes were saved.');
+      setEditingMovie(null);
+    } catch (err) {
+      setError(err.message);
+    }
   };
 
   const handleDeleteMovie = () => {
