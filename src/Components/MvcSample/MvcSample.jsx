@@ -78,18 +78,40 @@ function MvcSample() {
     }
   };
 
-  const handleUpdateMovie = (event) => {
-    event.preventDefault();
-    // TODO (students): Send all four fields with a numeric releaseYear; sync the list after success.
-    setCrudNotice('Update is not connected. No changes were saved.');
-    setEditingMovie(null);
-  };
+  const handleUpdateMovie = async (event) => {
+  event.preventDefault();
 
-  const handleDeleteMovie = () => {
-    // TODO (students): Delete by ID, handle 204 without JSON parsing, then sync the list.
-    setCrudNotice('Delete is not connected. No movie was deleted.');
+  try {
+    await movieApi.update(editingMovie.id, {
+      title: editingMovie.title.trim(),
+      genre: editingMovie.genre.trim(),
+      releaseYear: Number(editingMovie.releaseYear),
+      watched: editingMovie.watched,
+    });
+
+    await handleLoadMovies();
+
+    setCrudNotice('Movie updated successfully.');
+    setEditingMovie(null);
+  } catch (err) {
+    setError(err.message);
+  }
+};
+
+
+  const handleDeleteMovie = async () => {
+  try {
+    await movieApi.delete(deletingMovie.id);
+
+    await handleLoadMovies();
+
+    setCrudNotice('Movie deleted successfully.');
     setDeletingMovie(null);
-  };
+  } catch (err) {
+    setError(err.message);
+  }
+};
+
 
   const handleEditChange = (field) => (event) =>
     setEditingMovie({ ...editingMovie, [field]: event.target.value });
