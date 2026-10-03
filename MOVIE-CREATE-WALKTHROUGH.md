@@ -56,6 +56,8 @@ Your required result is five matching rows inserted **from the frontend through 
 
 **After the five inserts work:** Continue on that same page using [api.js](src/Common/api.js) and the existing backend endpoints. The API helper exposes `getAll`, `get`, `update`, and `remove`; they are starting points, not completed UI features.
 
+The page now includes a **Preview data** movie table, an edit form, and a delete-confirmation dialog. The list, update, and delete handlers intentionally do not call the API or change database records. Follow the `TODO (students)` comments in [MvcSample.jsx](src/Components/MvcSample/MvcSample.jsx) to connect them. Replace the preview rows with database results and remove the preview label once connected. The existing **Add Movie** form remains connected to the backend; a newly created movie will not appear in the preview table until you implement list loading and refresh after create.
+
 1. **List:** request `GET /api/Movie` on page load and render the saved movies, including the new one after a successful POST (without refreshing the browser). Show loading, empty, and error states.
 2. **Update:** allow changing a saved movie's title, genre, release year, or watched status with `PUT /api/Movie/{id}`. Send a complete movie body: the backend replaces all four fields, not just the one you changed. Keep the UI in sync with the response or reload the list.
 3. **Delete:** remove a saved movie using `DELETE /api/Movie/{id}` and update the visible list after success. The backend responds with **204 No Content**, so do not parse JSON from it.
