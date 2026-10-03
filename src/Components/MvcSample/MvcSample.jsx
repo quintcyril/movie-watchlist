@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Stack from '@mui/material/Stack';
@@ -32,14 +32,50 @@ function MvcSample() {
   const [createdMovie, setCreatedMovie] = useState(null);
   const [saving, setSaving] = useState(false);
   // TODO (students): Replace preview data with database movies and add a state setter.
-  const [movies] = useState(previewMovies);
+  const [movies, setMovies] = useState(previewMovies);
   const [editingMovie, setEditingMovie] = useState(null);
   const [deletingMovie, setDeletingMovie] = useState(null);
   const [crudNotice, setCrudNotice] = useState('');
+  
+  
+  useEffect(() => {
+    handleLoadMovies();
+  }, [createdMovie]);
 
-  const handleLoadMovies = () => {
-    // TODO (students): Load movies on mount and refresh; handle loading, empty, and error states.
-    setCrudNotice('List is not connected. The displayed rows are preview data, not database records.');
+
+    const handleSubmit = async (event) => {
+    event.preventDefault();
+    setError('');
+    setCreatedMovie(null);
+    setSaving(true);
+    try {
+      const created = await movieApi.create({
+        title: form.title.trim(),
+        genre: form.genre.trim(),
+        releaseYear: Number(form.releaseYear),
+        watched: false,
+      });
+      setCreatedMovie(created);
+      setForm(emptyForm);
+      // TODO (students): Refresh the database list after a successful create.
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleLoadMovies = async (event) => {
+    try {
+      const movies = await movieApi.getAll();
+      setMovies(movies);
+      setCrudNotice('Movies loaded successfully.');
+
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setSaving(false);
+    }
   };
 
   const handleUpdateMovie = (event) => {
@@ -61,27 +97,7 @@ function MvcSample() {
   const handleChange = (field) => (event) =>
     setForm({ ...form, [field]: event.target.value });
 
-  const handleSubmit = async (event) => {
-    event.preventDefault();
-    setError('');
-    setCreatedMovie(null);
-    setSaving(true);
-    try {
-      const created = await movieApi.create({
-        title: form.title.trim(),
-        genre: form.genre.trim(),
-        releaseYear: Number(form.releaseYear),
-        watched: false,
-      });
-      setCreatedMovie(created);
-      setForm(emptyForm);
-      // TODO (students): Refresh the database list after a successful create.
-    } catch (err) {
-      setError(err.message);
-    } finally {
-      setSaving(false);
-    }
-  };
+
 
   return (
     <Box>
