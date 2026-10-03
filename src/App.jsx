@@ -1,6 +1,4 @@
 import { useContext } from 'react';
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
 import './App.css'
 import MovieWatchListMain from './Components/MovieWatchlist/Main';
 import { AuthProvider, AuthContext } from './Common/AuthContext';
@@ -11,6 +9,7 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import Box from '@mui/material/Box';
 import Sidebar from './Common/Sidebar';
 import ReviewScreen from './Components/ReviewScreen/ReviewScreen';
+import MvcSample from './Components/MvcSample/MvcSample';
 
 function MovieOtherScreen() {
   return (
@@ -32,10 +31,12 @@ function AppContent() {
           <Sidebar />
           <Box sx={{ flexGrow: 1, p: 3 }}>
             <Routes>
-              <Route path="/" element={<MovieWatchListMain />} />
+              <Route path="/" element={<Navigate to="/mvc-sample" replace />} />
+              <Route path="/watchlist" element={<MovieWatchListMain />} />
               <Route pat="/register" element={<Navigate to="/login" />} />
               <Route path="/other" element={<MovieOtherScreen />} />
               <Route path="/reviews" element={<ReviewScreen />} />
+              <Route path="/mvc-sample" element={<MvcSample />} />
               <Route path="*" element={<Navigate to="/" />} />
             </Routes>
           </Box>
