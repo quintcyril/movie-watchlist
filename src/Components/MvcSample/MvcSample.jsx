@@ -21,18 +21,13 @@ import Typography from '@mui/material/Typography';
 import { movieApi } from '../../Common/api';
 
 const emptyForm = { title: '', genre: '', releaseYear: new Date().getFullYear() };
-const previewMovies = [
-  { id: 1, title: 'The Matrix', genre: 'Sci-Fi', releaseYear: 1999, watched: false },
-  { id: 2, title: 'Finding Nemo', genre: 'Animation', releaseYear: 2003, watched: true },
-];
 
 function MvcSample() {
   const [form, setForm] = useState(emptyForm);
   const [error, setError] = useState('');
   const [createdMovie, setCreatedMovie] = useState(null);
   const [saving, setSaving] = useState(false);
-  // TODO (students): Replace preview data with database movies and add a state setter.
-  const [movies, setMovies] = useState(previewMovies);
+  const [movies, setMovies] = useState([]);
   const [editingMovie, setEditingMovie] = useState(null);
   const [deletingMovie, setDeletingMovie] = useState(null);
   const [crudNotice, setCrudNotice] = useState('');
@@ -42,8 +37,52 @@ function MvcSample() {
     handleLoadMovies();
   }, [createdMovie]);
 
+  const handleLoadMovies = () => {
+    const load = async () => {
+      try {
+        const data = await movieApi.getAll();
+        setMovies(data);
+      } catch (err) {
+        setError(err.message);
+      }
+    }
+    load();
+  };
 
-    const handleSubmit = async (event) => {
+  const handleUpdateMovie = (event) => {
+    event.preventDefault();
+    const update = async () => {
+      try {
+        const updated = await movieApi.update(editingMovie.id, editingMovie);
+        setMovies(movies.map((m) => (m.id === updated.id ? updated : m)));
+      } catch (err) {
+        setError(err.message);
+      }
+    }
+    update();
+    setEditingMovie(null);
+  };
+
+  const handleDeleteMovie = () => {
+    const remove = async () => {
+      try {
+        await movieApi.remove(deletingMovie.id);
+        setMovies(movies.filter((m) => m.id !== deletingMovie.id));
+      } catch (err) {
+        setError(err.message);
+      }
+    }
+    remove();
+    setDeletingMovie(null);
+  };
+
+  const handleEditChange = (field) => (event) =>
+    setEditingMovie({ ...editingMovie, [field]: event.target.value });
+
+  const handleChange = (field) => (event) =>
+    setForm({ ...form, [field]: event.target.value });
+
+  const handleSubmit = async (event) => {
     event.preventDefault();
     setError('');
     setCreatedMovie(null);
@@ -57,47 +96,13 @@ function MvcSample() {
       });
       setCreatedMovie(created);
       setForm(emptyForm);
-      // TODO (students): Refresh the database list after a successful create.
+      handleLoadMovies();
     } catch (err) {
       setError(err.message);
     } finally {
       setSaving(false);
     }
   };
-
-  const handleLoadMovies = async (event) => {
-    try {
-      const movies = await movieApi.getAll();
-      setMovies(movies);
-      setCrudNotice('Movies loaded successfully.');
-
-    } catch (err) {
-      setError(err.message);
-    } finally {
-      setSaving(false);
-    }
-  };
-
-  const handleUpdateMovie = (event) => {
-    event.preventDefault();
-    // TODO (students): Send all four fields with a numeric releaseYear; sync the list after success.
-    setCrudNotice('Update is not connected. No changes were saved.');
-    setEditingMovie(null);
-  };
-
-  const handleDeleteMovie = () => {
-    // TODO (students): Delete by ID, handle 204 without JSON parsing, then sync the list.
-    setCrudNotice('Delete is not connected. No movie was deleted.');
-    setDeletingMovie(null);
-  };
-
-  const handleEditChange = (field) => (event) =>
-    setEditingMovie({ ...editingMovie, [field]: event.target.value });
-
-  const handleChange = (field) => (event) =>
-    setForm({ ...form, [field]: event.target.value });
-
-
 
   return (
     <Box>
