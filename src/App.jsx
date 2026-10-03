@@ -29,7 +29,17 @@ function AppContent() {
       <BrowserRouter>
         <Box sx={{ display: 'flex' }}>
           <Sidebar />
-          <Box sx={{ flexGrow: 1, p: 3 }}>
+          <Box
+            component="main"
+            sx={{
+              flexGrow: 1,
+              minWidth: 0,
+              minHeight: 'calc(100vh - 64px)',
+              p: 3,
+              color: '#172033',
+              bgcolor: '#f5f7fb',
+            }}
+          >
             <Routes>
               <Route path="/" element={<Navigate to="/mvc-sample" replace />} />
               <Route path="/watchlist" element={<MovieWatchListMain />} />
