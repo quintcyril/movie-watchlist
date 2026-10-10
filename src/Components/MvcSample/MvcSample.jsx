@@ -78,17 +78,46 @@ function MvcSample() {
     }
   };
 
-  const handleUpdateMovie = (event) => {
+  const handleUpdateMovie = async (event) => {
     event.preventDefault();
-    // TODO (students): Send all four fields with a numeric releaseYear; sync the list after success.
-    setCrudNotice('Update is not connected. No changes were saved.');
-    setEditingMovie(null);
+    if (!editingMovie) return;
+
+    setError('');
+    setSaving(true);
+    try {
+      await movieApi.update(editingMovie.id, {
+        title: editingMovie.title.trim(),
+        genre: editingMovie.genre.trim(),
+        releaseYear: Number(editingMovie.releaseYear),
+        watched: editingMovie.watched,
+      });
+      const refreshedMovies = await movieApi.getAll();
+      setMovies(refreshedMovies);
+      setCrudNotice(`Updated "${editingMovie.title}" successfully.`);
+      setEditingMovie(null);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setSaving(false);
+    }
   };
 
-  const handleDeleteMovie = () => {
-    // TODO (students): Delete by ID, handle 204 without JSON parsing, then sync the list.
-    setCrudNotice('Delete is not connected. No movie was deleted.');
-    setDeletingMovie(null);
+  const handleDeleteMovie = async () => {
+    if (!deletingMovie) return;
+
+    setError('');
+    setSaving(true);
+    try {
+      await movieApi.remove(deletingMovie.id);
+      const refreshedMovies = await movieApi.getAll();
+      setMovies(refreshedMovies);
+      setCrudNotice(`Deleted "${deletingMovie.title}" successfully.`);
+      setDeletingMovie(null);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setSaving(false);
+    }
   };
 
   const handleEditChange = (field) => (event) =>
@@ -177,7 +206,9 @@ function MvcSample() {
           </DialogContent>
           <DialogActions>
             <Button onClick={() => setEditingMovie(null)}>Cancel</Button>
-            <Button type="submit" variant="contained" disabled={!editingMovie?.title.trim()}>Save Changes</Button>
+            <Button type="submit" variant="contained" disabled={saving || !editingMovie?.title.trim()}>
+              {saving ? 'Saving...' : 'Save Changes'}
+            </Button>
           </DialogActions>
         </Box>
       </Dialog>
@@ -187,7 +218,7 @@ function MvcSample() {
         <DialogContent><Typography sx={{ overflowWrap: 'anywhere' }}>Delete "{deletingMovie?.title}"?</Typography></DialogContent>
         <DialogActions>
           <Button onClick={() => setDeletingMovie(null)}>Cancel</Button>
-          <Button color="error" variant="contained" onClick={handleDeleteMovie}>Delete</Button>
+          <Button color="error" variant="contained" onClick={handleDeleteMovie} disabled={saving}>Delete</Button>
         </DialogActions>
       </Dialog>
     </Box>
