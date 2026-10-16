@@ -21,18 +21,15 @@ import Typography from '@mui/material/Typography';
 import { movieApi } from '../../Common/api';
 
 const emptyForm = { title: '', genre: '', releaseYear: new Date().getFullYear() };
-const previewMovies = [
-  { id: 1, title: 'The Matrix', genre: 'Sci-Fi', releaseYear: 1999, watched: false },
-  { id: 2, title: 'Finding Nemo', genre: 'Animation', releaseYear: 2003, watched: true },
-];
+
 
 function MvcSample() {
   const [form, setForm] = useState(emptyForm);
   const [error, setError] = useState('');
   const [createdMovie, setCreatedMovie] = useState(null);
   const [saving, setSaving] = useState(false);
-  // TODO (students): Replace preview data with database movies and add a state setter.
-  const [movies, setMovies] = useState(previewMovies);
+  
+  const [movies, setMovies] = useState([]);
   const [editingMovie, setEditingMovie] = useState(null);
   const [deletingMovie, setDeletingMovie] = useState(null);
   const [crudNotice, setCrudNotice] = useState('');
@@ -57,7 +54,8 @@ function MvcSample() {
       });
       setCreatedMovie(created);
       setForm(emptyForm);
-      // TODO (students): Refresh the database list after a successful create.
+      
+      await handleLoadMovies();
     } catch (err) {
       setError(err.message);
     } finally {
@@ -65,7 +63,7 @@ function MvcSample() {
     }
   };
 
-  const handleLoadMovies = async (event) => {
+  const handleLoadMovies = async () => {
     try {
       const movies = await movieApi.getAll();
       setMovies(movies);
@@ -78,18 +76,47 @@ function MvcSample() {
     }
   };
 
-  const handleUpdateMovie = (event) => {
-    event.preventDefault();
-    // TODO (students): Send all four fields with a numeric releaseYear; sync the list after success.
-    setCrudNotice('Update is not connected. No changes were saved.');
+ 
+   
+    const handleUpdateMovie = async (event) => {
+  event.preventDefault();
+  setSaving(true);
+  setError('');
+  try {
+    await movieApi.update(editingMovie.id, {
+      title: editingMovie.title.trim(),
+      genre: editingMovie.genre.trim(),
+      releaseYear: Number(editingMovie.releaseYear),
+      watched: Boolean(editingMovie.watched),
+    });
+    setCrudNotice(`Movie #${editingMovie.id} updated successfully.`);
     setEditingMovie(null);
-  };
+    await handleLoadMovies();
+  } catch (err) {
+    setError(err.message);
+  } finally {
+    setSaving(false);
+  }
+};
+    
 
-  const handleDeleteMovie = () => {
-    // TODO (students): Delete by ID, handle 204 without JSON parsing, then sync the list.
-    setCrudNotice('Delete is not connected. No movie was deleted.');
+ 
+    
+    const handleDeleteMovie = async () => {
+  setSaving(true);
+  setError('');
+  try {
+    await movieApi.remove(deletingMovie.id);
+    setCrudNotice(`"${deletingMovie.title}" was deleted.`);
     setDeletingMovie(null);
-  };
+    await handleLoadMovies();
+  } catch (err) {
+    setError(err.message);
+  } finally {
+    setSaving(false);
+  }
+};
+   
 
   const handleEditChange = (field) => (event) =>
     setEditingMovie({ ...editingMovie, [field]: event.target.value });
