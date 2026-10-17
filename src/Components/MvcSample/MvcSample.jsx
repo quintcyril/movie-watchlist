@@ -100,16 +100,27 @@ function MvcSample() {
 
 
   const handleDeleteMovie = async () => {
-  try {
-    await movieApi.delete(deletingMovie.id);
+    if (!deletingMovie || saving) return;
 
-    await handleLoadMovies();
+    setError('');
+    setSaving(true);
 
-    setCrudNotice('Movie deleted successfully.');
-    setDeletingMovie(null);
-  } catch (err) {
-    setError(err.message);
-  }
+    try {
+      const movieId = deletingMovie.id;
+      const movieTitle = deletingMovie.title;
+
+      await movieApi.remove(movieId);
+
+      const updateMovies = await movieApi.getAll();
+      setMovies(updateMovies);
+
+      setCrudNotice(`"${movieTitle}" deleted successfully.`);
+      setDeletingMovie(null);
+    } catch (err) {
+      setError(err.message || 'Failed to delete movie.');
+    } finally {
+      setSaving(false);
+    }
 };
 
 
