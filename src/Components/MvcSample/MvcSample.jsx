@@ -78,28 +78,38 @@ function MvcSample() {
     }
   };
 
-  const handleUpdateMovie = (event) => {
+  const handleUpdateMovie = async (event) => {
     event.preventDefault();
     try {
-      await movieApi.update(editingMovie, {
-      title: editingMovie.title.trim(),
-      genre: editingMovie.title.trim(),
-      releaseYear: Number(editingMovie.releaseYear),
-      watched: editingMovie.watched,
+      await movieApi.update(editingMovie.id, {
+        title: editingMovie.title.trim(),
+        genre: editingMovie.title.trim(),
+        releaseYear: Number(editingMovie.releaseYear),
+        watched: editingMovie.watched,
       });
-      await handleLoadMovies; 
+      await handleLoadMovies();
 
-      setCrudNotice('Update is not connected. No changes were saved.');
+      setCrudNotice('Movie updated.');
       setEditingMovie(null);
     } catch (err) {
       setError(err.message);
     }
   };
 
-  const handleDeleteMovie = () => {
+  const handleDeleteMovie = async () => {
     // TODO (students): Delete by ID, handle 204 without JSON parsing, then sync the list.
-    setCrudNotice('Delete is not connected. No movie was deleted.');
-    setDeletingMovie(null);
+    if (!deletingMovie) return;
+
+    try {
+      await movieApi.remove(deletingMovie.id);
+
+      await handleLoadMovies();
+
+      setCrudNotice('Movie deleted.');
+      setDeletingMovie(null);
+    } catch (err) {
+      setError(err.message);
+    }
   };
 
   const handleEditChange = (field) => (event) =>
