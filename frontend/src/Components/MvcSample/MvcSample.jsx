@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect,useState } from 'react';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Stack from '@mui/material/Stack';
@@ -31,28 +31,58 @@ function MvcSample() {
   const [error, setError] = useState('');
   const [createdMovie, setCreatedMovie] = useState(null);
   const [saving, setSaving] = useState(false);
-  // TODO (students): Replace preview data with database movies and add a state setter.
-  const [movies] = useState(previewMovies);
+  const [movies, setMovies] = useState([]);
   const [editingMovie, setEditingMovie] = useState(null);
   const [deletingMovie, setDeletingMovie] = useState(null);
   const [crudNotice, setCrudNotice] = useState('');
 
-  const handleLoadMovies = () => {
-    // TODO (students): Load movies on mount and refresh; handle loading, empty, and error states.
-    setCrudNotice('List is not connected. The displayed rows are preview data, not database records.');
+  const handleLoadMovies = async () => {
+    try{
+      const data = await movieApi.getAll();
+      setMovies(data);
+      setCrudNotice('');
+    }catch (err){
+      setCrudNotice(`Failed to load movies:${err.message}`);
+    }
+    
   };
 
-  const handleUpdateMovie = (event) => {
+  useEffect(() => {
+  handleLoadMovies();
+}, []);
+
+  const handleUpdateMovie = async (event) => {
     event.preventDefault();
-    // TODO (students): Send all four fields with a numeric releaseYear; sync the list after success.
-    setCrudNotice('Update is not connected. No changes were saved.');
+    
+    if(!editingMovie) return;
+    try{
+      await movieApi.update(editingMovie.id, {
+        title: editingMovie.title.trim(),
+        genre: editingMovie.genre.trim(),
+        releaseYear: Number(editingMovie.releaseYear),
+        watched: editingMovie.watched,
+      });
+      await handleLoadMovies();
     setEditingMovie(null);
+    setCrudNotice('Movie update successfully.');
+    } catch(err){
+      setCrudNotice(`Failed to update movie: ${err.message}`);
+    }
+    
   };
 
-  const handleDeleteMovie = () => {
-    // TODO (students): Delete by ID, handle 204 without JSON parsing, then sync the list.
-    setCrudNotice('Delete is not connected. No movie was deleted.');
-    setDeletingMovie(null);
+  const handleDeleteMovie = async() => {
+    if(!deletingMovie) return;
+    try{
+     await movieApi.remove(deletingMovie.id);
+
+     await handleLoadMovies(null);
+     setDeletingMovie(null);
+     setCrudNotice('Movie deleted successfully');
+    }catch(err){
+     setCrudNotice(`Failed to delete movie: ${err.message}`);
+    }
+    
   };
 
   const handleEditChange = (field) => (event) =>
@@ -75,7 +105,7 @@ function MvcSample() {
       });
       setCreatedMovie(created);
       setForm(emptyForm);
-      // TODO (students): Refresh the database list after a successful create.
+      await handleLoadMovies();
     } catch (err) {
       setError(err.message);
     } finally {
