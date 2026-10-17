@@ -1,10 +1,9 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Stack from '@mui/material/Stack';
 import TextField from '@mui/material/TextField';
 import Alert from '@mui/material/Alert';
-import Chip from '@mui/material/Chip';
 import Checkbox from '@mui/material/Checkbox';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Dialog from '@mui/material/Dialog';
@@ -21,10 +20,6 @@ import Typography from '@mui/material/Typography';
 import { movieApi } from '../../Common/api';
 
 const emptyForm = { title: '', genre: '', releaseYear: new Date().getFullYear() };
-const previewMovies = [
-  { id: 1, title: 'The Matrix', genre: 'Sci-Fi', releaseYear: 1999, watched: false },
-  { id: 2, title: 'Finding Nemo', genre: 'Animation', releaseYear: 2003, watched: true },
-];
 
 function MvcSample() {
   const [form, setForm] = useState(emptyForm);
@@ -32,27 +27,66 @@ function MvcSample() {
   const [createdMovie, setCreatedMovie] = useState(null);
   const [saving, setSaving] = useState(false);
   // TODO (students): Replace preview data with database movies and add a state setter.
-  const [movies] = useState(previewMovies);
+  const [movies, setMovies] = useState([]);
+  const [loading, setLoading] = useState(false);
   const [editingMovie, setEditingMovie] = useState(null);
   const [deletingMovie, setDeletingMovie] = useState(null);
   const [crudNotice, setCrudNotice] = useState('');
 
-  const handleLoadMovies = () => {
+  const loadMovies = async () => {
     // TODO (students): Load movies on mount and refresh; handle loading, empty, and error states.
-    setCrudNotice('List is not connected. The displayed rows are preview data, not database records.');
+    setLoading(true);
+    setError('');
+    try {
+      const data = await movieApi.getAll();
+      setMovies(data);
+    } catch(err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const handleUpdateMovie = (event) => {
+  useEffect(() => {
+    loadMovies();
+  }, []);
+
+  const handleUpdateMovie = async (event) => {
     event.preventDefault();
     // TODO (students): Send all four fields with a numeric releaseYear; sync the list after success.
-    setCrudNotice('Update is not connected. No changes were saved.');
-    setEditingMovie(null);
+    setError('');
+    setSaving(true);
+    try {
+      await movieApi.update(editingMovie.id, {
+        title: editingMovie.title.trim(),
+        genre: (editingMovie.genre ?? '').trim(),
+        releaseYear: Number(editingMovie.releaseYear),
+        watched: editingMovie.watched,
+      });
+      setEditingMovie(null);
+      setCrudNotice('Movie updated.');
+      await loadMovies();
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setSaving(false);
+    }
   };
 
-  const handleDeleteMovie = () => {
+  const handleDeleteMovie = async () => {
     // TODO (students): Delete by ID, handle 204 without JSON parsing, then sync the list.
-    setCrudNotice('Delete is not connected. No movie was deleted.');
-    setDeletingMovie(null);
+    setError('');
+    setSaving(true);
+    try {
+      await movieApi.remove(deletingMovie.id);
+      setDeletingMovie(null);
+      setCrudNotice(`Deleted "${deletingMovie.title}".`);
+      await loadMovies();
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setSaving(false);
+    }
   };
 
   const handleEditChange = (field) => (event) =>
@@ -75,6 +109,7 @@ function MvcSample() {
       });
       setCreatedMovie(created);
       setForm(emptyForm);
+      await loadMovies();
       // TODO (students): Refresh the database list after a successful create.
     } catch (err) {
       setError(err.message);
@@ -108,8 +143,7 @@ function MvcSample() {
       <Box sx={{ borderTop: 1, borderColor: 'divider', pt: 3 }}>
         <Stack direction="row" spacing={2} alignItems="center" sx={{ mb: 2 }}>
           <Typography component="h3" variant="h6" sx={{ flex: 1 }}>Movie List</Typography>
-          <Chip label="Preview data" size="small" variant="outlined" />
-          <Button onClick={handleLoadMovies}>Refresh</Button>
+          <Button onClick={loadMovies}>Refresh</Button>
         </Stack>
         {crudNotice && <Alert severity="warning" sx={{ mb: 2 }} onClose={() => setCrudNotice('')}>{crudNotice}</Alert>}
         <TableContainer>
@@ -126,7 +160,11 @@ function MvcSample() {
             </TableHead>
             <TableBody>
               {movies.length === 0 && (
-                <TableRow><TableCell colSpan={6} align="center" sx={{ py: 4 }}>No movies found.</TableCell></TableRow>
+                <TableRow>
+                  <TableCell colSpan={6} align="center" sx={{ py: 4 }}>
+                    {loading ? 'Loading movies...' : 'No movies found'}
+                  </TableCell>
+                </TableRow>
               )}
               {movies.map((movie) => (
                 <TableRow key={movie.id}>
@@ -153,7 +191,7 @@ function MvcSample() {
             {editingMovie && (
               <Stack spacing={2} sx={{ pt: 1 }}>
                 <TextField label="Title" required autoFocus inputProps={{ maxLength: 150 }} value={editingMovie.title} onChange={handleEditChange('title')} />
-                <TextField label="Genre" inputProps={{ maxLength: 50 }} value={editingMovie.genre} onChange={handleEditChange('genre')} />
+                <TextField label="Genre" inputProps={{ maxLength: 50 }} value={editingMovie.genre ?? ''} onChange={handleEditChange('genre')} />
                 <TextField label="Release year" type="number" required inputProps={{ min: 1888, max: 2200 }} value={editingMovie.releaseYear} onChange={handleEditChange('releaseYear')} />
                 <FormControlLabel label="Watched" control={<Checkbox checked={editingMovie.watched} onChange={(event) => setEditingMovie({ ...editingMovie, watched: event.target.checked })} />} />
               </Stack>
@@ -161,7 +199,7 @@ function MvcSample() {
           </DialogContent>
           <DialogActions>
             <Button onClick={() => setEditingMovie(null)}>Cancel</Button>
-            <Button type="submit" variant="contained" disabled={!editingMovie?.title.trim()}>Save Changes</Button>
+            <Button type="submit" variant="contained" disable={saving || !editingMovie?.title.trim()}>Save Changes</Button>
           </DialogActions>
         </Box>
       </Dialog>
@@ -171,7 +209,7 @@ function MvcSample() {
         <DialogContent><Typography sx={{ overflowWrap: 'anywhere' }}>Delete "{deletingMovie?.title}"?</Typography></DialogContent>
         <DialogActions>
           <Button onClick={() => setDeletingMovie(null)}>Cancel</Button>
-          <Button color="error" variant="contained" onClick={handleDeleteMovie}>Delete</Button>
+          <Button color="error" variant="contained" onClick={handleDeleteMovie} disable={saving}>Delete</Button>
         </DialogActions>
       </Dialog>
     </Box>
