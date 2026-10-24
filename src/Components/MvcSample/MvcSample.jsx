@@ -1,11 +1,11 @@
-import { useState } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Stack from '@mui/material/Stack';
 import TextField from '@mui/material/TextField';
 import Alert from '@mui/material/Alert';
-import Chip from '@mui/material/Chip';
 import Checkbox from '@mui/material/Checkbox';
+import CircularProgress from '@mui/material/CircularProgress';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Dialog from '@mui/material/Dialog';
 import DialogTitle from '@mui/material/DialogTitle';
@@ -21,38 +21,105 @@ import Typography from '@mui/material/Typography';
 import { movieApi } from '../../Common/api';
 
 const emptyForm = { title: '', genre: '', releaseYear: new Date().getFullYear() };
-const previewMovies = [
-  { id: 1, title: 'The Matrix', genre: 'Sci-Fi', releaseYear: 1999, watched: false },
-  { id: 2, title: 'Finding Nemo', genre: 'Animation', releaseYear: 2003, watched: true },
-];
 
 function MvcSample() {
   const [form, setForm] = useState(emptyForm);
   const [error, setError] = useState('');
   const [createdMovie, setCreatedMovie] = useState(null);
   const [saving, setSaving] = useState(false);
-  // TODO (students): Replace preview data with database movies and add a state setter.
-  const [movies] = useState(previewMovies);
+  // Movies now come from the database (GET /api/Movie), not from hardcoded preview rows.
+  const [movies, setMovies] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [listError, setListError] = useState('');
   const [editingMovie, setEditingMovie] = useState(null);
+  const [editError, setEditError] = useState('');
+  const [savingEdit, setSavingEdit] = useState(false);
   const [deletingMovie, setDeletingMovie] = useState(null);
+  const [deleteError, setDeleteError] = useState('');
+  const [deleting, setDeleting] = useState(false);
   const [crudNotice, setCrudNotice] = useState('');
 
+  // Fetches the saved movies and replaces the table contents.
+  // The caller turns the spinner on (or `loading` starts as true on first render).
+  const loadMovies = useCallback(
+    () =>
+      movieApi
+        .getAll()
+        .then((data) => {
+          setMovies(data);
+          setListError('');
+        })
+        .catch((err) => setListError(`Could not load movies: ${err.message}`))
+        .finally(() => setLoading(false)),
+    [],
+  );
+
+  // List: load once when the page opens.
+  useEffect(() => {
+    loadMovies();
+  }, [loadMovies]);
+
+  // List: the Refresh button re-reads the database.
   const handleLoadMovies = () => {
-    // TODO (students): Load movies on mount and refresh; handle loading, empty, and error states.
-    setCrudNotice('List is not connected. The displayed rows are preview data, not database records.');
+    setLoading(true);
+    setCrudNotice('');
+    loadMovies();
   };
 
-  const handleUpdateMovie = (event) => {
+  // Update: PUT /api/Movie/{id} replaces all four fields, so send the whole movie.
+  const handleUpdateMovie = async (event) => {
     event.preventDefault();
-    // TODO (students): Send all four fields with a numeric releaseYear; sync the list after success.
-    setCrudNotice('Update is not connected. No changes were saved.');
-    setEditingMovie(null);
+    setEditError('');
+    setCrudNotice('');
+    setSavingEdit(true);
+    try {
+      const updated = await movieApi.update(editingMovie.id, {
+        title: editingMovie.title.trim(),
+        genre: editingMovie.genre.trim(),
+        releaseYear: Number(editingMovie.releaseYear),
+        watched: editingMovie.watched,
+      });
+      setCrudNotice(`Saved changes to #${updated.id}: ${updated.title}.`);
+      setEditingMovie(null);
+      setLoading(true);
+      await loadMovies();
+    } catch (err) {
+      // Dialog stays open so the typed changes are not lost.
+      setEditError(`Could not save changes: ${err.message}`);
+    } finally {
+      setSavingEdit(false);
+    }
   };
 
-  const handleDeleteMovie = () => {
-    // TODO (students): Delete by ID, handle 204 without JSON parsing, then sync the list.
-    setCrudNotice('Delete is not connected. No movie was deleted.');
-    setDeletingMovie(null);
+  // Delete: DELETE /api/Movie/{id} answers 204 No Content, so api.js returns null and parses no JSON.
+  const handleDeleteMovie = async () => {
+    setDeleteError('');
+    setCrudNotice('');
+    setDeleting(true);
+    try {
+      await movieApi.remove(deletingMovie.id);
+      setCrudNotice(`Deleted "${deletingMovie.title}" (#${deletingMovie.id}).`);
+      setDeletingMovie(null);
+      setLoading(true);
+      await loadMovies();
+    } catch (err) {
+      setDeleteError(`Could not delete: ${err.message}`);
+    } finally {
+      setDeleting(false);
+    }
+  };
+
+  const handleOpenEdit = (movie) => {
+    setEditError('');
+    setCrudNotice('');
+    // Genre is nullable in MySQL; '' keeps the TextField a controlled input.
+    setEditingMovie({ ...movie, genre: movie.genre ?? '' });
+  };
+
+  const handleOpenDelete = (movie) => {
+    setDeleteError('');
+    setCrudNotice('');
+    setDeletingMovie(movie);
   };
 
   const handleEditChange = (field) => (event) =>
@@ -65,6 +132,7 @@ function MvcSample() {
     event.preventDefault();
     setError('');
     setCreatedMovie(null);
+    setCrudNotice('');
     setSaving(true);
     try {
       const created = await movieApi.create({
@@ -75,7 +143,9 @@ function MvcSample() {
       });
       setCreatedMovie(created);
       setForm(emptyForm);
-      // TODO (students): Refresh the database list after a successful create.
+      // Create: show the new row without a browser refresh.
+      setLoading(true);
+      await loadMovies();
     } catch (err) {
       setError(err.message);
     } finally {
@@ -108,10 +178,10 @@ function MvcSample() {
       <Box sx={{ borderTop: 1, borderColor: 'divider', pt: 3 }}>
         <Stack direction="row" spacing={2} alignItems="center" sx={{ mb: 2 }}>
           <Typography component="h3" variant="h6" sx={{ flex: 1 }}>Movie List</Typography>
-          <Chip label="Preview data" size="small" variant="outlined" />
-          <Button onClick={handleLoadMovies}>Refresh</Button>
+          <Button onClick={handleLoadMovies} disabled={loading}>Refresh</Button>
         </Stack>
-        {crudNotice && <Alert severity="warning" sx={{ mb: 2 }} onClose={() => setCrudNotice('')}>{crudNotice}</Alert>}
+        {crudNotice && <Alert severity="success" sx={{ mb: 2 }} onClose={() => setCrudNotice('')}>{crudNotice}</Alert>}
+        {listError && <Alert severity="error" sx={{ mb: 2 }}>{listError}</Alert>}
         <TableContainer>
           <Table size="small" aria-label="Movie list" sx={{ minWidth: 620 }}>
             <TableHead>
@@ -125,10 +195,13 @@ function MvcSample() {
               </TableRow>
             </TableHead>
             <TableBody>
-              {movies.length === 0 && (
+              {loading && (
+                <TableRow><TableCell colSpan={6} align="center" sx={{ py: 4 }}><CircularProgress size={24} /></TableCell></TableRow>
+              )}
+              {!loading && !listError && movies.length === 0 && (
                 <TableRow><TableCell colSpan={6} align="center" sx={{ py: 4 }}>No movies found.</TableCell></TableRow>
               )}
-              {movies.map((movie) => (
+              {!loading && movies.map((movie) => (
                 <TableRow key={movie.id}>
                   <TableCell>{movie.id}</TableCell>
                   <TableCell component="th" scope="row">{movie.title}</TableCell>
@@ -136,8 +209,8 @@ function MvcSample() {
                   <TableCell>{movie.releaseYear}</TableCell>
                   <TableCell>{movie.watched ? 'Watched' : 'Not watched'}</TableCell>
                   <TableCell align="right" sx={{ whiteSpace: 'nowrap' }}>
-                    <Button size="small" aria-label={`Edit ${movie.title}`} onClick={() => setEditingMovie({ ...movie })}>Edit</Button>
-                    <Button size="small" color="error" aria-label={`Delete ${movie.title}`} onClick={() => setDeletingMovie(movie)}>Delete</Button>
+                    <Button size="small" aria-label={`Edit ${movie.title}`} onClick={() => handleOpenEdit(movie)}>Edit</Button>
+                    <Button size="small" color="error" aria-label={`Delete ${movie.title}`} onClick={() => handleOpenDelete(movie)}>Delete</Button>
                   </TableCell>
                 </TableRow>
               ))}
@@ -146,12 +219,13 @@ function MvcSample() {
         </TableContainer>
       </Box>
 
-      <Dialog open={Boolean(editingMovie)} onClose={() => setEditingMovie(null)} fullWidth maxWidth="sm" aria-labelledby="edit-movie-title">
+      <Dialog open={Boolean(editingMovie)} onClose={() => !savingEdit && setEditingMovie(null)} fullWidth maxWidth="sm" aria-labelledby="edit-movie-title">
         <Box component="form" onSubmit={handleUpdateMovie}>
           <DialogTitle id="edit-movie-title">Edit Movie</DialogTitle>
           <DialogContent>
             {editingMovie && (
               <Stack spacing={2} sx={{ pt: 1 }}>
+                {editError && <Alert severity="error">{editError}</Alert>}
                 <TextField label="Title" required autoFocus inputProps={{ maxLength: 150 }} value={editingMovie.title} onChange={handleEditChange('title')} />
                 <TextField label="Genre" inputProps={{ maxLength: 50 }} value={editingMovie.genre} onChange={handleEditChange('genre')} />
                 <TextField label="Release year" type="number" required inputProps={{ min: 1888, max: 2200 }} value={editingMovie.releaseYear} onChange={handleEditChange('releaseYear')} />
@@ -160,18 +234,27 @@ function MvcSample() {
             )}
           </DialogContent>
           <DialogActions>
-            <Button onClick={() => setEditingMovie(null)}>Cancel</Button>
-            <Button type="submit" variant="contained" disabled={!editingMovie?.title.trim()}>Save Changes</Button>
+            <Button onClick={() => setEditingMovie(null)} disabled={savingEdit}>Cancel</Button>
+            <Button type="submit" variant="contained" disabled={savingEdit || !editingMovie?.title.trim()}>
+              {savingEdit ? 'Saving...' : 'Save Changes'}
+            </Button>
           </DialogActions>
         </Box>
       </Dialog>
 
-      <Dialog open={Boolean(deletingMovie)} onClose={() => setDeletingMovie(null)} fullWidth maxWidth="xs" aria-labelledby="delete-movie-title">
+      <Dialog open={Boolean(deletingMovie)} onClose={() => !deleting && setDeletingMovie(null)} fullWidth maxWidth="xs" aria-labelledby="delete-movie-title">
         <DialogTitle id="delete-movie-title">Delete Movie?</DialogTitle>
-        <DialogContent><Typography sx={{ overflowWrap: 'anywhere' }}>Delete "{deletingMovie?.title}"?</Typography></DialogContent>
+        <DialogContent>
+          <Stack spacing={2}>
+            {deleteError && <Alert severity="error">{deleteError}</Alert>}
+            <Typography sx={{ overflowWrap: 'anywhere' }}>Delete "{deletingMovie?.title}"?</Typography>
+          </Stack>
+        </DialogContent>
         <DialogActions>
-          <Button onClick={() => setDeletingMovie(null)}>Cancel</Button>
-          <Button color="error" variant="contained" onClick={handleDeleteMovie}>Delete</Button>
+          <Button onClick={() => setDeletingMovie(null)} disabled={deleting}>Cancel</Button>
+          <Button color="error" variant="contained" onClick={handleDeleteMovie} disabled={deleting}>
+            {deleting ? 'Deleting...' : 'Delete'}
+          </Button>
         </DialogActions>
       </Dialog>
     </Box>
