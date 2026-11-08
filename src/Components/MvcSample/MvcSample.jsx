@@ -1,10 +1,10 @@
-import { useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Stack from '@mui/material/Stack';
 import TextField from '@mui/material/TextField';
 import Alert from '@mui/material/Alert';
-import Chip from '@mui/material/Chip';
+import CircularProgress from '@mui/material/CircularProgress';
 import Checkbox from '@mui/material/Checkbox';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Dialog from '@mui/material/Dialog';
@@ -21,38 +21,65 @@ import Typography from '@mui/material/Typography';
 import { movieApi } from '../../Common/api';
 
 const emptyForm = { title: '', genre: '', releaseYear: new Date().getFullYear() };
-const previewMovies = [
-  { id: 1, title: 'The Matrix', genre: 'Sci-Fi', releaseYear: 1999, watched: false },
-  { id: 2, title: 'Finding Nemo', genre: 'Animation', releaseYear: 2003, watched: true },
-];
 
 function MvcSample() {
   const [form, setForm] = useState(emptyForm);
   const [error, setError] = useState('');
   const [createdMovie, setCreatedMovie] = useState(null);
   const [saving, setSaving] = useState(false);
-  // TODO (students): Replace preview data with database movies and add a state setter.
-  const [movies] = useState(previewMovies);
+  const [movies, setMovies] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [listError, setListError] = useState('');
   const [editingMovie, setEditingMovie] = useState(null);
   const [deletingMovie, setDeletingMovie] = useState(null);
   const [crudNotice, setCrudNotice] = useState('');
 
-  const handleLoadMovies = () => {
-    // TODO (students): Load movies on mount and refresh; handle loading, empty, and error states.
-    setCrudNotice('List is not connected. The displayed rows are preview data, not database records.');
-  };
+  const loadMovies = useCallback(async () => {
+    setLoading(true);
+    setListError('');
+    try {
+      setMovies(await movieApi.getAll());
+    } catch (err) {
+      setListError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
 
-  const handleUpdateMovie = (event) => {
+  useEffect(() => {
+    loadMovies();
+  }, [loadMovies]);
+
+  const handleUpdateMovie = async (event) => {
     event.preventDefault();
-    // TODO (students): Send all four fields with a numeric releaseYear; sync the list after success.
-    setCrudNotice('Update is not connected. No changes were saved.');
-    setEditingMovie(null);
+    setCrudNotice('');
+    try {
+      const updated = await movieApi.update(editingMovie.id, {
+        id: editingMovie.id,
+        title: editingMovie.title.trim(),
+        genre: (editingMovie.genre || '').trim(),
+        releaseYear: Number(editingMovie.releaseYear),
+        watched: Boolean(editingMovie.watched),
+      });
+      setMovies((prev) => prev.map((m) => (m.id === updated.id ? updated : m)));
+      setEditingMovie(null);
+      setCrudNotice(`Updated "${updated.title}".`);
+    } catch (err) {
+      setCrudNotice(`Update failed: ${err.message}`);
+    }
   };
 
-  const handleDeleteMovie = () => {
-    // TODO (students): Delete by ID, handle 204 without JSON parsing, then sync the list.
-    setCrudNotice('Delete is not connected. No movie was deleted.');
-    setDeletingMovie(null);
+  const handleDeleteMovie = async () => {
+    setCrudNotice('');
+    try {
+      await movieApi.remove(deletingMovie.id);
+      setMovies((prev) => prev.filter((m) => m.id !== deletingMovie.id));
+      setCrudNotice(`Deleted "${deletingMovie.title}".`);
+    } catch (err) {
+      setCrudNotice(`Delete failed: ${err.message}`);
+    } finally {
+      setDeletingMovie(null);
+    }
   };
 
   const handleEditChange = (field) => (event) =>
@@ -75,7 +102,7 @@ function MvcSample() {
       });
       setCreatedMovie(created);
       setForm(emptyForm);
-      // TODO (students): Refresh the database list after a successful create.
+      await loadMovies();
     } catch (err) {
       setError(err.message);
     } finally {
@@ -108,10 +135,10 @@ function MvcSample() {
       <Box sx={{ borderTop: 1, borderColor: 'divider', pt: 3 }}>
         <Stack direction="row" spacing={2} alignItems="center" sx={{ mb: 2 }}>
           <Typography component="h3" variant="h6" sx={{ flex: 1 }}>Movie List</Typography>
-          <Chip label="Preview data" size="small" variant="outlined" />
-          <Button onClick={handleLoadMovies}>Refresh</Button>
+          <Button onClick={loadMovies} disabled={loading}>Refresh</Button>
         </Stack>
-        {crudNotice && <Alert severity="warning" sx={{ mb: 2 }} onClose={() => setCrudNotice('')}>{crudNotice}</Alert>}
+        {listError && <Alert severity="error" sx={{ mb: 2 }}>{listError}</Alert>}
+        {crudNotice && <Alert severity={crudNotice.includes('failed') ? 'error' : 'success'} sx={{ mb: 2 }} onClose={() => setCrudNotice('')}>{crudNotice}</Alert>}
         <TableContainer>
           <Table size="small" aria-label="Movie list" sx={{ minWidth: 620 }}>
             <TableHead>
@@ -125,7 +152,10 @@ function MvcSample() {
               </TableRow>
             </TableHead>
             <TableBody>
-              {movies.length === 0 && (
+              {loading && (
+                <TableRow><TableCell colSpan={6} align="center" sx={{ py: 4 }}><CircularProgress size={24} /></TableCell></TableRow>
+              )}
+              {!loading && !listError && movies.length === 0 && (
                 <TableRow><TableCell colSpan={6} align="center" sx={{ py: 4 }}>No movies found.</TableCell></TableRow>
               )}
               {movies.map((movie) => (
